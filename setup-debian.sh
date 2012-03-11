@@ -100,6 +100,12 @@ function install_vim {
 }
 
 function install_dropbear {
+
+	if [ -z "$1" ]
+	then
+		die "Usage: `basename $0` dropbear [ssh-port-#]"
+	fi
+
 	check_install dropbear dropbear
 	check_install /usr/sbin/xinetd xinetd
 
@@ -120,6 +126,8 @@ service ssh
 	server       = /usr/sbin/dropbear
 	server_args  = -i
 	disable      = no
+	port         = $1
+	type		 = unlisted
 }
 END
 	invoke-rc.d xinetd restart
@@ -462,6 +470,9 @@ site)
 iptables)
     install_iptables $2
     ;;
+dropbear)
+    install_dropbear $2
+    ;;
 system)
 	update_timezone
 	remove_unneeded
@@ -470,13 +481,13 @@ system)
 	install_vim
 	install_nano
 	install_syslogd
-	install_dropbear
 	;;
 *)
 	echo 'Usage:' `basename $0` '[option] [argument]'
 	echo 'Available options (in recomended order):'
 	echo '  - dotdeb    (install dotdeb apt source for nginx +1.0)'
 	echo '  - system    (remove unneeded, upgrade system)'
+	echo '  - dropbear  (SSH server)'
 	echo '  - iptables  (setup basic firewall with HTTP(S) open)'
 	echo '  - mysql	    (install MySQL and set root password)'
 	echo '  - nginx     (install nginx and create sample PHP vhosts)'

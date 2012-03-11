@@ -15,4 +15,4 @@ Includes sample nginx config files for PHP sites. You can create a basic site sh
 
 ./setup-debian.sh site example.com
 
-When running the iptables install you must specify a SSH port to allow (22 is the default). Future support will allow xinetd.d to use an alternate port for SSH. However, for now port 22 is all that works with this script and xinetd.d.
+When running the iptables or dropbear install you must specify a SSH port. Remember, port 22 is the default. It's recomended that you change this from 22 just to save server load from attacks on that port.
