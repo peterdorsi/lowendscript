@@ -126,8 +126,10 @@ END
 }
 
 function install_dotdeb {
-	echo "deb http://mirror.us.leaseweb.net/dotdeb/ stable all" >> /etc/apt/sources.list
-	echo "deb-src http://mirror.us.leaseweb.net/dotdeb/ stable all" >> /etc/apt/sources.list
+	#echo "deb http://mirror.us.leaseweb.net/dotdeb/ stable all" >> /etc/apt/sources.list
+	#echo "deb-src http://mirror.us.leaseweb.net/dotdeb/ stable all" >> /etc/apt/sources.list
+	echo "deb http://packages.dotdeb.org squeeze all" >> /etc/apt/sources.list
+	echo "deb-src http://packages.dotdeb.org squeeze all" >> /etc/apt/sources.list
 	wget -q -O - http://www.dotdeb.org/dotdeb.gpg | apt-key add -
 }
 
