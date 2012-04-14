@@ -110,6 +110,7 @@ function install_iotop {
 function install_iftop {
 	check_install iftop iftop
         print_warn "Run IFCONFIG to find your net. device name"
+        print_warn "Example usage: iftop -i venet0"
 }
 
 function install_vim {
