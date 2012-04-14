@@ -95,6 +95,23 @@ function install_nano {
 	check_install nano nano
 }
 
+function install_htop {
+	check_install htop htop
+}
+
+function install_mc {
+	check_install mc mc
+}
+
+function install_iotop {
+	check_install iotop iotop
+}
+
+function install_iftop {
+	check_install iftop iftop
+        print_warn "Run IFCONFIG to find your net. device name"
+}
+
 function install_vim {
 	check_install vim vim
 }
@@ -483,6 +500,10 @@ system)
 	install_dash
 	install_vim
 	install_nano
+        install_htop
+        install_mc
+        install_iotop
+        install_iftop
 	install_syslogd
 	;;
 *)
