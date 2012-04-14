@@ -33,5 +33,5 @@ When running the iptables or dropbear install you must specify a SSH port. Remem
   
 ## After installation:  
 After installing the full, set ram usage reaches ~70-75Mb, this is due to caching (APC in this case) is being enabled during installation.  
-To reduce ram usage by 30Mb you may disable APC by moving or deleting the following fil - /etc/php5/fpm/conf.d/apc.ini  
+To reduce ram usage by 30Mb you may disable APC by moving or deleting the following file - /etc/php5/fpm/conf.d/apc.ini  
 I recommend installing Ajenti and/or Webmin to manage your VPS.  
