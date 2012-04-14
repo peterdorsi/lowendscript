@@ -136,9 +136,11 @@ END
 function install_dotdeb {
 	#echo "deb http://mirror.us.leaseweb.net/dotdeb/ stable all" >> /etc/apt/sources.list
 	#echo "deb-src http://mirror.us.leaseweb.net/dotdeb/ stable all" >> /etc/apt/sources.list
-	echo "deb http://packages.dotdeb.org squeeze all" >> /etc/apt/sources.list
-	echo "deb-src http://packages.dotdeb.org squeeze all" >> /etc/apt/sources.list
+	echo "deb http://dotdeb.debian.skynet.be/ stable all" >> /etc/apt/sources.list
+	echo "deb-src http://dotdeb.debian.skynet.be/ stable all" >> /etc/apt/sources.list
 	wget -q -O - http://www.dotdeb.org/dotdeb.gpg | apt-key add -
+        gpg --keyserver keys.gnupg.net --recv-key 89DF5277
+        gpg -a --export 89DF5277 | sudo apt-key add -
 }
 
 function install_syslogd {
