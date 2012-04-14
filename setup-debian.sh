@@ -152,10 +152,17 @@ END
 }
 
 function install_dotdeb {
-	#echo "deb http://mirror.us.leaseweb.net/dotdeb/ stable all" >> /etc/apt/sources.list
-	#echo "deb-src http://mirror.us.leaseweb.net/dotdeb/ stable all" >> /etc/apt/sources.list
-	echo "deb http://dotdeb.debian.skynet.be/ stable all" >> /etc/apt/sources.list
-	echo "deb-src http://dotdeb.debian.skynet.be/ stable all" >> /etc/apt/sources.list
+	# Disabling original DotDeb repos, using a faster mirrors
+mv /etc/apt/sources.list /etc/apt/sources.list.orig
+cat > /etc/apt/sources.list <<END
+deb http://dotdeb.debian.skynet.be/ stable all
+deb-src http://dotdeb.debian.skynet.be/ stable all
+deb http://mirrors.kernel.org/debian/ squeeze main contrib non-free
+deb http://mirrors.usc.edu/pub/linux/distributions/debian/ squeeze main contrib non-free
+##buyvm.net mirror:
+#deb http://mirrors.buyvm.net/debian/ squeeze main contrib non-free
+END
+apt-get update
 	wget -q -O - http://www.dotdeb.org/dotdeb.gpg | apt-key add -
         gpg --keyserver keys.gnupg.net --recv-key 89DF5277
         gpg -a --export 89DF5277 | sudo apt-key add -
