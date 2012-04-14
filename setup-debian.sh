@@ -364,6 +364,7 @@ END
 	chown www-data:www-data -R "/var/www/$1"
 
     service nginx restart
+print_warn "New site successfully installed."
 }
 
 function install_iptables {
