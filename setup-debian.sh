@@ -300,10 +300,10 @@ location ~ \.php$ {
   fastcgi_split_path_info ^(.+\.php)(/.+)$;
   include /etc/nginx/fastcgi_params;
   # As explained in http://kbeezie.com/view/php-self-path-nginx/ some fastcgi_param are missing from fastcgi_params.
-  # Keep these parameters for compatibility with old PHP scripts using them.
-  fastcgi_param PATH_INFO $fastcgi_path_info;
-  fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
-  fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+  # Keep these parameters for compatibility with old PHP scripts using them. Better to turn this on.
+  #fastcgi_param PATH_INFO $fastcgi_path_info;
+  #fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
+  #fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
   # Some default config
   fastcgi_connect_timeout        60;
   fastcgi_send_timeout          180;
