@@ -17,7 +17,7 @@ Includes sample nginx config files for PHP sites. You can create a basic site sh
 
 When running the iptables or dropbear install you must specify a SSH port. Remember, port 22 is the default. It's recomended that you change this from 22 just to save server load from attacks on that port.
 
-Usage:
+Usage:  
  - wget --no-check-certificate https://github.com/ilevkov/lowendscript/raw/master/setup-debian.sh  
  - bash setup-debian.sh dotdeb  
  - bash setup-debian.sh system  
