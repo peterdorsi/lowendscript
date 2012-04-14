@@ -27,5 +27,6 @@ When running the iptables or dropbear install you must specify a SSH port. Remem
  bash setup-debian.sh mysql  
  bash setup-debian.sh nginx  
  bash setup-debian.sh php  
+ bash setup-debian.sh exim4   
  bash setup-debian.sh site example.com  
 
