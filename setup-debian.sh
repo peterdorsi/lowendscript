@@ -151,6 +151,17 @@ END
 	invoke-rc.d xinetd restart
 }
 
+function install_exim4 {
+    check_install mail exim4
+    if [ -f /etc/exim4/update-exim4.conf.conf ]
+    then
+        sed -i \
+            "s/dc_eximconfig_configtype='local'/dc_eximconfig_configtype='internet'/" \
+            /etc/exim4/update-exim4.conf.conf
+        invoke-rc.d exim4 restart
+    fi
+}
+
 function install_dotdeb {
 	# Disabling original DotDeb repos, using a faster mirrors
 mv /etc/apt/sources.list /etc/apt/sources.list.orig
@@ -504,6 +515,9 @@ case "$1" in
 mysql)
 	install_mysql
 	;;
+exim4)
+    install_exim4
+    ;;
 nginx)
 	install_nginx
 	;;
@@ -539,7 +553,8 @@ system)
 	echo 'Usage:' `basename $0` '[option] [argument]'
 	echo 'Available options (in recomended order):'
 	echo '  - dotdeb    (install dotdeb apt source for nginx +1.0)'
-	echo '  - system    (remove unneeded, upgrade system)'
+	echo '  - system    (remove unneeded, upgrade system, install musthave software)'
+        echo '  - exim4     (install exim4 mail server)'
 	echo '  - dropbear  (SSH server)'
 	echo '  - iptables  (setup basic firewall with HTTP(S) open)'
 	echo '  - mysql	    (install MySQL and set root password)'
