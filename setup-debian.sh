@@ -295,15 +295,15 @@ location ~ \.php$ {
   # Zero-day exploit defense.
   # http://forum.nginx.org/read.php?2,88845,page=3
   # Won't work properly (404 error) if the file is not stored on this server, which is entirely possible with php-fpm/php-fcgi.
-  # Comment the 'try_files' line out if you set up php-fpm/php-fcgi on another machine.  And then cross your fingers that you won't get hacked.
-  try_files       $uri /index.php;
+  # Comment the 'try_files' line out if you set up php-fpm/php-fcgi on another machine.  And then cross your fingers that you won't get hacked. Turn this on for security.
+  try_files       \$uri /index.php;
   fastcgi_split_path_info ^(.+\.php)(/.+)$;
   include /etc/nginx/fastcgi_params;
   # As explained in http://kbeezie.com/view/php-self-path-nginx/ some fastcgi_param are missing from fastcgi_params.
   # Keep these parameters for compatibility with old PHP scripts using them. Better to turn this on.
-  #fastcgi_param PATH_INFO $fastcgi_path_info;
-  #fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
-  #fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+  fastcgi_param PATH_INFO \$fastcgi_path_info;
+  fastcgi_param PATH_TRANSLATED \$document_root\$fastcgi_path_info;
+  fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
   # Some default config
   fastcgi_connect_timeout        60;
   fastcgi_send_timeout          180;
