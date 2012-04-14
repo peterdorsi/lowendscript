@@ -245,6 +245,7 @@ function install_php {
 }
 
 function install_nginx {
+        mkdir -p /var/www
 	check_install nginx nginx
 
 	# PHP-safe default vhost
