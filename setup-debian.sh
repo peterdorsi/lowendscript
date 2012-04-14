@@ -341,6 +341,10 @@ function install_site {
 Hello World
 END
 
+	# Setup test phpinfo.php file
+     echo "<?php phpinfo(); ?>" > /var/www/$1/public/phpinfo.php
+     chown www-data:www-data "/var/www/$1/public/phpinfo.php"
+
     # Setting up Nginx mapping
     cat > "/etc/nginx/sites-available/$1.conf" <<END
 server {
@@ -365,6 +369,7 @@ END
 
     service nginx restart
 print_warn "New site successfully installed."
+print_warn "You may can test PHP functionality by accessing $1/phpinfo.php"
 }
 
 function install_iptables {
