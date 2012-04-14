@@ -6,9 +6,10 @@ Remove excess packages and install the basic components needed for a light-weigh
  - iptables (firewall)
  - dash (replaces bash)
  - syslogd
- - MySQL (+5.5 from dotdeb)
- - PHP-FPM
- - nginx (+1.0 from dotdeb)
+ - MySQL (v5.1+)
+ - PHP-FPM (v5.3+)
+ - exim4 (light mail server)
+ - nginx (v1.0+ from dotdeb)
  - vim, nano, mc, htop, iftop & iotop (more to come...)
 
 Includes sample nginx config files for PHP sites. You can create a basic site shell (complete with nginx vhost) like this:
