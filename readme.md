@@ -23,7 +23,7 @@ When running the iptables or dropbear install you must specify a SSH port. Remem
  wget --no-check-certificate https://github.com/ilevkov/lowendscript/raw/master/setup-debian.sh  
  bash setup-debian.sh dotdeb  
  bash setup-debian.sh system  
- bash setup-debian.sh dropbear 22  *(or any other port number)  
+ bash setup-debian.sh dropbear 22  <b>*(or any other port number)</b>  
  bash setup-debian.sh iptables  
  bash setup-debian.sh mysql  
  bash setup-debian.sh nginx  
