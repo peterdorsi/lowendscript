@@ -205,10 +205,24 @@ END
 }
 
 function install_mysql {
+# Temporary disabling DotDeb repos
+mv /etc/apt/sources.list /etc/apt/sources.list.backup
+cat > /etc/apt/sources.list <<END
+#deb http://dotdeb.debian.skynet.be/ stable all
+#deb-src http://dotdeb.debian.skynet.be/ stable all
+deb http://mirrors.kernel.org/debian/ squeeze main contrib non-free
+deb http://mirrors.usc.edu/pub/linux/distributions/debian/ squeeze main contrib non-free
+##buyvm.net mirror:
+#deb http://mirrors.buyvm.net/debian/ squeeze main contrib non-free
+END
+apt-get update
 	# Install the MySQL packages
 	check_install mysqld mysql-server
 	check_install mysql mysql-client
-
+	# Enabling DotDeb repos
+	rm /etc/apt/sources.list
+	mv /etc/apt/sources.list.backup /etc/apt/sources.list
+	apt-get update
 	# Install a low-end copy of the my.cnf to disable InnoDB
 	invoke-rc.d mysql stop
 	cat > /etc/mysql/conf.d/lowendbox.cnf <<END
