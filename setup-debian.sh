@@ -141,6 +141,7 @@ function install_dotdeb {
 	wget -q -O - http://www.dotdeb.org/dotdeb.gpg | apt-key add -
         gpg --keyserver keys.gnupg.net --recv-key 89DF5277
         gpg -a --export 89DF5277 | sudo apt-key add -
+        apt-get update
 }
 
 function install_syslogd {
