@@ -23,7 +23,7 @@ When running the iptables or dropbear install you must specify a SSH port. Remem
  wget --no-check-certificate https://github.com/ilevkov/lowendscript/raw/master/setup-debian.sh  
  bash setup-debian.sh dotdeb  
  bash setup-debian.sh system  
- bash setup-debian.sh dropbear 22  # or any other port number  
+ bash setup-debian.sh dropbear 22  ####(or any other port number)  
  bash setup-debian.sh iptables  
  bash setup-debian.sh mysql  
  bash setup-debian.sh nginx  
@@ -34,3 +34,4 @@ When running the iptables or dropbear install you must specify a SSH port. Remem
 ## After installation:  
 After installing the full, set ram usage reaches ~70-75Mb, this is due to caching (APC in this case) is being enabled during installation.  
 To reduce ram usage by 30Mb you may disable APC by moving or deleting the following fil - /etc/php5/fpm/conf.d/apc.ini  
+I recommend installing Ajenti and/or Webmin to manage your VPS.  
