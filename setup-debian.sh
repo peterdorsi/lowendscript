@@ -274,6 +274,22 @@ function install_php {
 
 	echo 'Using PHP-FPM to manage PHP processes'
 	echo ' '
+cat > /etc/php5/conf.d/apc.ini <<END
+apc.enabled=1
+apc.shm_segments=1
+apc.shm_size=16
+apc.ttl=7200
+apc.user_ttl=7200
+apc.num_files_hint=1024
+apc.mmap_file_mask=/tmp/apc.XXXXXX
+apc.max_file_size = 1M
+apc.post_max_size = 1000M
+apc.upload_max_filesize = 1000M
+apc.enable_cli=0
+apc.rfc1867=0
+END
+service php5-fpm restart
+
 }
 
 function install_nginx {
