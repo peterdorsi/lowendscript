@@ -365,10 +365,10 @@ END
  if [ -f /etc/nginx/nginx.conf ]
     then
         sed -i \
-            "s/worker_processes 1;/worker_processes 4;/" \
+            "s/worker_processes 4;/worker_processes 1;/" \
             /etc/nginx/nginx.conf
         sed -i \
-            "s/worker_connections 1024;/worker_connections 768;/" \
+            "s/worker_connections 768;/worker_connections 1024;/" \
             /etc/nginx/nginx.conf
  fi
 	invoke-rc.d nginx restart
