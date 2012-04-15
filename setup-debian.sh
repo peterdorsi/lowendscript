@@ -288,6 +288,17 @@ apc.upload_max_filesize = 1000M
 apc.enable_cli=0
 apc.rfc1867=0
 END
+
+ if [ -f /etc/php5/fpm/php.ini ]
+    then
+        sed -i \
+            "s/upload_max_filesize = 2M/upload_max_filesize = 200M/" \
+            /etc/php5/fpm/php.ini
+        sed -i \
+            "s/post_max_size = 8M/post_max_size = 200M/" \
+            /etc/php5/fpm/php.ini
+    fi
+
 service php5-fpm restart
 
 }
