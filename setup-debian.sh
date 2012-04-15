@@ -297,6 +297,9 @@ END
         sed -i \
             "s/post_max_size = 8M/post_max_size = 200M/" \
             /etc/php5/fpm/php.ini
+        sed -i \
+            "s/memory_limit = 128M/memory_limit = 96M/" \
+            /etc/php5/fpm/php.ini
     fi
 
 service php5-fpm restart
@@ -359,7 +362,15 @@ END
 	echo 'Created /etc/nginx/php.conf for PHP sites'
 	echo 'Created /etc/nginx/sites-available/default_php sample vhost'
 	echo ' '
-
+ if [ -f /etc/nginx/nginx.conf ]
+    then
+        sed -i \
+            "s/worker_processes 1;/worker_processes 4;/" \
+            /etc/nginx/nginx.conf
+        sed -i \
+            "s/worker_connections 1024;/worker_connections 768;/" \
+            /etc/nginx/nginx.conf
+ fi
 	invoke-rc.d nginx restart
 }
 
