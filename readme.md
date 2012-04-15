@@ -6,10 +6,10 @@ Remove excess packages and install the basic components needed for a light-weigh
  - iptables (firewall)
  - dash (replaces bash)
  - syslogd
- - MySQL (v5.1+)
- - PHP-FPM (v5.3+)
+ - MySQL (v5.1+ W/O Innodb, configured for lowend VPS)
+ - PHP-FPM (v5.3+ with APC installed and configured)
  - exim4 (light mail server)
- - nginx (v1.0+ from dotdeb)
+ - nginx (v1.0+ from dotdeb, configured for lowend VPS. Change worker_processes number in /etc/nginx/nginx.conf according to number of your CPUs)
  - vim, nano, mc, htop, iftop & iotop (more to come...)
 
 Includes sample nginx config files for PHP sites. You can create a basic site shell (complete with nginx vhost) like this:
@@ -32,6 +32,7 @@ When running the iptables or dropbear install you must specify a SSH port. Remem
  bash setup-debian.sh site example.com  
   
 ## After installation:  
-After installing the full set, ram usage reaches ~70-75Mb, this is due to caching (APC in this case) is being enabled during installation.  
-To reduce ram usage by 30Mb you may disable APC by moving or deleting the following file - /etc/php5/fpm/conf.d/apc.ini  
+After installing the full set, ram usage reaches ~40-45Mb.  
+By default APC configured to use 16Mb for caching.  
+To reduce ram usage, you may disable APC by moving or deleting the following file - /etc/php5/conf.d/apc.ini  
 I recommend installing Ajenti and/or Webmin to manage your VPS.  
