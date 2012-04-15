@@ -36,3 +36,4 @@ After installing the full set, ram usage reaches ~40-45Mb.
 By default APC configured to use 16Mb for caching.  
 To reduce ram usage, you may disable APC by moving or deleting the following file - /etc/php5/conf.d/apc.ini  
 I recommend installing Ajenti and/or Webmin to manage your VPS.  
+For security reasons delete, move or password protect "new_domain/public/phpinfo.php" file, which installed automatically on each new site installation.  
