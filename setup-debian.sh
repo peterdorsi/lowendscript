@@ -275,6 +275,8 @@ function install_php {
 	echo 'Using PHP-FPM to manage PHP processes'
 	echo ' '
 cat > /etc/php5/conf.d/apc.ini <<END
+[APC]
+extension=apc.so
 apc.enabled=1
 apc.shm_segments=1
 apc.shm_size=16
