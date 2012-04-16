@@ -304,7 +304,7 @@ END
             /etc/php5/fpm/php.ini
     fi
 
-service php5-fpm restart
+invoke-rc.d php5-fpm restart
 
 }
 
@@ -418,7 +418,7 @@ END
 	# PHP/Nginx needs permission to access this
 	chown www-data:www-data -R "/var/www/$1"
 
-    service nginx restart
+    invoke-rc.d nginx restart
 print_warn "New site successfully installed."
 print_warn "You may can test PHP functionality by accessing $1/phpinfo.php"
 }
