@@ -1,6 +1,6 @@
 ## Debian 6 VPS Script
 
-Remove excess packages and install the basic components needed for a light-weight HTTP(S) web server.
+Remove excess packages (apache2, sendmail, bind9, samba, nscd, etc) and install the basic components needed for a light-weight HTTP(S) web server:  
 
  - dropbear (SSH)
  - iptables (firewall)
@@ -32,8 +32,12 @@ When running the iptables or dropbear install you must specify a SSH port. Remem
  bash setup-debian.sh site example.com  
   
 ## After installation:  
+MySQL root is given a new password which is located in ~root/.my.cnf.  
 After installing the full set, ram usage reaches ~40-45Mb.  
 By default APC configured to use 16Mb for caching.  
 To reduce ram usage, you may disable APC by moving or deleting the following file - /etc/php5/conf.d/apc.ini  
 I recommend installing Ajenti and/or Webmin to manage your VPS.  
 For security reasons delete, move or password protect "new_domain/public/phpinfo.php" file, which installed automatically on each new site installation.  
+  
+## Thanks:  
+LowEndBox admin (LEA), Xeoncross and many others
