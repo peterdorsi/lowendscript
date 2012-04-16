@@ -400,15 +400,29 @@ END
     cat > "/etc/nginx/sites-available/$1.conf" <<END
 server {
 	listen 80;
-	server_name $1;
+	server_name www.$1 $1;
 	root /var/www/$1/public;
 
 	# Directives to send expires headers and turn off 404 error logging.
-	#location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
-	#	expires 24h;
-	#	log_not_found off;
-	#}
-
+	location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+		expires max;
+		log_not_found off;
+                access_log off;
+	}
+        
+        location = /favicon.ico {
+		log_not_found off;
+		access_log off;
+	}
+	location = /robots.txt {
+		allow all;
+		log_not_found off;
+		access_log off;
+	}
+	## Disable viewing .htaccess & .htpassword 
+	location ~ /\.ht {
+		deny  all;
+	}
 	include /etc/nginx/php.conf;
 }
 END
