@@ -70,15 +70,15 @@ function get_password() {
 }
 
 function print_info {
-    echo -n -e '\e[1;36m'
-    echo -n $1
-    echo -e '\e[0m'
+	echo -n -e '\e[1;36m'
+	echo -n $1
+	echo -e '\e[0m'
 }
 
 function print_warn {
-    echo -n -e '\e[1;33m'
-    echo -n $1
-    echo -e '\e[0m'
+	echo -n -e '\e[1;33m'
+	echo -n $1
+	echo -e '\e[0m'
 }
 
 
@@ -109,8 +109,8 @@ function install_iotop {
 
 function install_iftop {
 	check_install iftop iftop
-        print_warn "Run IFCONFIG to find your net. device name"
-        print_warn "Example usage: iftop -i venet0"
+	print_warn "Run IFCONFIG to find your net. device name"
+	print_warn "Example usage: iftop -i venet0"
 }
 
 function install_vim {
@@ -136,7 +136,7 @@ function install_dropbear {
 	cat > /etc/xinetd.d/dropbear <<END
 service ssh
 {
-	socket_type	 = stream
+	socket_type  = stream
 	only_from    = 0.0.0.0
 	wait         = no
 	user         = root
@@ -145,26 +145,26 @@ service ssh
 	server_args  = -i
 	disable      = no
 	port         = $1
-	type		 = unlisted
+	type         = unlisted
 }
 END
 	invoke-rc.d xinetd restart
 }
 
 function install_exim4 {
-    check_install mail exim4
-    if [ -f /etc/exim4/update-exim4.conf.conf ]
-    then
-        sed -i \
-            "s/dc_eximconfig_configtype='local'/dc_eximconfig_configtype='internet'/" \
-            /etc/exim4/update-exim4.conf.conf
-        invoke-rc.d exim4 restart
-    fi
+	check_install mail exim4
+	if [ -f /etc/exim4/update-exim4.conf.conf ]
+	then
+		sed -i \
+			"s/dc_eximconfig_configtype='local'/dc_eximconfig_configtype='internet'/" \
+			/etc/exim4/update-exim4.conf.conf
+		invoke-rc.d exim4 restart
+	fi
 }
 
 function install_dotdeb {
 	# Disabling original DotDeb repos, using a faster mirrors
-mv /etc/apt/sources.list /etc/apt/sources.list.orig
+	mv /etc/apt/sources.list /etc/apt/sources.list.orig
 cat > /etc/apt/sources.list <<END
 deb http://dotdeb.debian.skynet.be/ stable all
 deb-src http://dotdeb.debian.skynet.be/ stable all
@@ -175,35 +175,35 @@ deb http://mirrors.usc.edu/pub/linux/distributions/debian/ squeeze main contrib 
 END
 apt-get update
 	wget -q -O - http://www.dotdeb.org/dotdeb.gpg | apt-key add -
-        gpg --keyserver keys.gnupg.net --recv-key 89DF5277
-        gpg -a --export 89DF5277 | sudo apt-key add -
-        apt-get update
+		gpg --keyserver keys.gnupg.net --recv-key 89DF5277
+		gpg -a --export 89DF5277 | sudo apt-key add -
+		apt-get update
 }
 
 function install_syslogd {
-    # We just need a simple vanilla syslogd. Also there is no need to log to
-    # so many files (waste of fd). Just dump them into
-    # /var/log/(cron/mail/messages)
-    check_install /usr/sbin/syslogd inetutils-syslogd
-    invoke-rc.d inetutils-syslogd stop
+	# We just need a simple vanilla syslogd. Also there is no need to log to
+	# so many files (waste of fd). Just dump them into
+	# /var/log/(cron/mail/messages)
+	check_install /usr/sbin/syslogd inetutils-syslogd
+	invoke-rc.d inetutils-syslogd stop
 
-    for file in /var/log/*.log /var/log/mail.* /var/log/debug /var/log/syslog
-    do
-        [ -f "$file" ] && rm -f "$file"
-    done
-    for dir in fsck news
-    do
-        [ -d "/var/log/$dir" ] && rm -rf "/var/log/$dir"
-    done
+	for file in /var/log/*.log /var/log/mail.* /var/log/debug /var/log/syslog
+	do
+		[ -f "$file" ] && rm -f "$file"
+	done
+	for dir in fsck news
+	do
+		[ -d "/var/log/$dir" ] && rm -rf "/var/log/$dir"
+	done
 
-    cat > /etc/syslog.conf <<END
+	cat > /etc/syslog.conf <<END
 *.*;mail.none;cron.none -/var/log/messages
-cron.*                  -/var/log/cron
-mail.*                  -/var/log/mail
+cron.*				  -/var/log/cron
+mail.*				  -/var/log/mail
 END
 
-    [ -d /etc/logrotate.d ] || mkdir -p /etc/logrotate.d
-    cat > /etc/logrotate.d/inetutils-syslogd <<END
+	[ -d /etc/logrotate.d ] || mkdir -p /etc/logrotate.d
+	cat > /etc/logrotate.d/inetutils-syslogd <<END
 /var/log/cron
 /var/log/mail
 /var/log/messages {
@@ -219,7 +219,7 @@ END
 }
 END
 
-    invoke-rc.d inetutils-syslogd start
+	invoke-rc.d inetutils-syslogd start
 }
 
 function install_mysql {
@@ -305,24 +305,24 @@ suhosin.sql.bailout_on_error = Off
 END
 
  if [ -f /etc/php5/fpm/php.ini ]
-    then
-        sed -i \
-            "s/upload_max_filesize = 2M/upload_max_filesize = 200M/" \
-            /etc/php5/fpm/php.ini
-        sed -i \
-            "s/post_max_size = 8M/post_max_size = 200M/" \
-            /etc/php5/fpm/php.ini
-        sed -i \
-            "s/memory_limit = 128M/memory_limit = 96M/" \
-            /etc/php5/fpm/php.ini
-    fi
+	then
+		sed -i \
+			"s/upload_max_filesize = 2M/upload_max_filesize = 200M/" \
+			/etc/php5/fpm/php.ini
+		sed -i \
+			"s/post_max_size = 8M/post_max_size = 200M/" \
+			/etc/php5/fpm/php.ini
+		sed -i \
+			"s/memory_limit = 128M/memory_limit = 96M/" \
+			/etc/php5/fpm/php.ini
+	fi
 
 invoke-rc.d php5-fpm restart
 
 }
 
 function install_nginx {
-        mkdir -p /var/www
+		mkdir -p /var/www
 	check_install nginx nginx
 
 	# PHP-safe default vhost
@@ -349,28 +349,28 @@ END
 index index.php index.html index.htm;
 location ~ \.php$ {
   # Zero-day exploit defense.
-  # http://forum.nginx.org/read.php?2,88845,page=3
-  # Won't work properly (404 error) if the file is not stored on this server, which is entirely possible with php-fpm/php-fcgi.
-  # Comment the 'try_files' line out if you set up php-fpm/php-fcgi on another machine.  And then cross your fingers that you won't get hacked. Turn this on for security.
-  try_files       \$uri /index.php;
-  fastcgi_split_path_info ^(.+\.php)(/.+)$;
-  include /etc/nginx/fastcgi_params;
-  # As explained in http://kbeezie.com/view/php-self-path-nginx/ some fastcgi_param are missing from fastcgi_params.
-  # Keep these parameters for compatibility with old PHP scripts using them. Better to turn this on.
-  fastcgi_param PATH_INFO \$fastcgi_path_info;
-  fastcgi_param PATH_TRANSLATED \$document_root\$fastcgi_path_info;
-  fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-  # Some default config
-  fastcgi_connect_timeout        60;
-  fastcgi_send_timeout          180;
-  fastcgi_read_timeout          180;
-  fastcgi_buffer_size          128k;
-  fastcgi_buffers            4 256k;
-  fastcgi_busy_buffers_size    256k;
-  fastcgi_temp_file_write_size 256k;
-  fastcgi_intercept_errors    on;
-  fastcgi_ignore_client_abort off;
-  fastcgi_pass 127.0.0.1:9000;
+	# http://forum.nginx.org/read.php?2,88845,page=3
+	# Won't work properly (404 error) if the file is not stored on this server, which is entirely possible with php-fpm/php-fcgi.
+	# Comment the 'try_files' line out if you set up php-fpm/php-fcgi on another machine.  And then cross your fingers that you won't get hacked. Turn this on for security.
+	try_files	   \$uri /index.php;
+	fastcgi_split_path_info ^(.+\.php)(/.+)$;
+	include /etc/nginx/fastcgi_params;
+	# As explained in http://kbeezie.com/view/php-self-path-nginx/ some fastcgi_param are missing from fastcgi_params.
+	# Keep these parameters for compatibility with old PHP scripts using them. Better to turn this on.
+	fastcgi_param PATH_INFO \$fastcgi_path_info;
+	fastcgi_param PATH_TRANSLATED \$document_root\$fastcgi_path_info;
+	fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+	# Some default config
+	fastcgi_connect_timeout		60;
+	fastcgi_send_timeout		  180;
+	fastcgi_read_timeout		  180;
+	fastcgi_buffer_size		  128k;
+	fastcgi_buffers			4 256k;
+	fastcgi_busy_buffers_size	256k;
+	fastcgi_temp_file_write_size 256k;
+	fastcgi_intercept_errors	on;
+	fastcgi_ignore_client_abort off;
+	fastcgi_pass 127.0.0.1:9000;
 }
 END
 
@@ -378,13 +378,13 @@ END
 	echo 'Created /etc/nginx/sites-available/default_php sample vhost'
 	echo ' '
  if [ -f /etc/nginx/nginx.conf ]
-    then
-        sed -i \
-            "s/worker_processes 4;/worker_processes 1;/" \
-            /etc/nginx/nginx.conf
-        sed -i \
-            "s/worker_connections 768;/worker_connections 1024;/" \
-            /etc/nginx/nginx.conf
+	then
+		sed -i \
+			"s/worker_processes 4;/worker_processes 1;/" \
+			/etc/nginx/nginx.conf
+		sed -i \
+			"s/worker_connections 768;/worker_connections 1024;/" \
+			/etc/nginx/nginx.conf
  fi
 	invoke-rc.d nginx restart
 }
@@ -396,7 +396,7 @@ function install_site {
 		die "Usage: `basename $0` site [domain]"
 	fi
 
-    # Setup folder
+	# Setup folder
 	mkdir /var/www/$1
 	mkdir /var/www/$1/public
 
@@ -406,11 +406,11 @@ Hello World
 END
 
 	# Setup test phpinfo.php file
-     echo "<?php phpinfo(); ?>" > /var/www/$1/public/phpinfo.php
-     chown www-data:www-data "/var/www/$1/public/phpinfo.php"
+	 echo "<?php phpinfo(); ?>" > /var/www/$1/public/phpinfo.php
+	 chown www-data:www-data "/var/www/$1/public/phpinfo.php"
 
-    # Setting up Nginx mapping
-    cat > "/etc/nginx/sites-available/$1.conf" <<END
+	# Setting up Nginx mapping
+	cat > "/etc/nginx/sites-available/$1.conf" <<END
 server {
 	listen 80;
 	server_name www.$1 $1;
@@ -420,10 +420,10 @@ server {
 	location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
 		expires max;
 		log_not_found off;
-                access_log off;
+				access_log off;
 	}
-        
-        location = /favicon.ico {
+
+	location = /favicon.ico {
 		log_not_found off;
 		access_log off;
 	}
@@ -432,7 +432,7 @@ server {
 		log_not_found off;
 		access_log off;
 	}
-	## Disable viewing .htaccess & .htpassword 
+	## Disable viewing .htaccess & .htpassword
 	location ~ /\.ht {
 		deny  all;
 	}
@@ -445,7 +445,7 @@ END
 	# PHP/Nginx needs permission to access this
 	chown www-data:www-data -R "/var/www/$1"
 
-    invoke-rc.d nginx restart
+	invoke-rc.d nginx restart
 print_warn "New site successfully installed."
 print_warn "You may can test PHP functionality by accessing $1/phpinfo.php"
 }
@@ -537,34 +537,34 @@ END
 }
 
 function remove_unneeded {
-    # Some Debian have portmap installed. We don't need that.
-    check_remove /sbin/portmap portmap
+	# Some Debian have portmap installed. We don't need that.
+	check_remove /sbin/portmap portmap
 
-    # Remove rsyslogd, which allocates ~30MB privvmpages on an OpenVZ system,
-    # which might make some low-end VPS inoperatable. We will do this even
-    # before running apt-get update.
-    check_remove /usr/sbin/rsyslogd rsyslog
+	# Remove rsyslogd, which allocates ~30MB privvmpages on an OpenVZ system,
+	# which might make some low-end VPS inoperatable. We will do this even
+	# before running apt-get update.
+	check_remove /usr/sbin/rsyslogd rsyslog
 
-    # Other packages that seem to be pretty common in standard OpenVZ
-    # templates.
-    check_remove /usr/sbin/apache2 'apache2*'
-    check_remove /usr/sbin/named bind9
-    check_remove /usr/sbin/smbd 'samba*'
-    check_remove /usr/sbin/nscd nscd
+	# Other packages that seem to be pretty common in standard OpenVZ
+	# templates.
+	check_remove /usr/sbin/apache2 'apache2*'
+	check_remove /usr/sbin/named bind9
+	check_remove /usr/sbin/smbd 'samba*'
+	check_remove /usr/sbin/nscd nscd
 
-    # Need to stop sendmail as removing the package does not seem to stop it.
-    if [ -f /usr/lib/sm.bin/smtpd ]
-    then
-        invoke-rc.d sendmail stop
-        check_remove /usr/lib/sm.bin/smtpd 'sendmail*'
-    fi
+	# Need to stop sendmail as removing the package does not seem to stop it.
+	if [ -f /usr/lib/sm.bin/smtpd ]
+	then
+		invoke-rc.d sendmail stop
+		check_remove /usr/lib/sm.bin/smtpd 'sendmail*'
+	fi
 }
 
 function update_upgrade {
-    # Run through the apt-get update/upgrade first. This should be done before
-    # we try to install any package
-    apt-get -q -y update
-    apt-get -q -y upgrade
+	# Run through the apt-get update/upgrade first. This should be done before
+	# we try to install any package
+	apt-get -q -y update
+	apt-get -q -y upgrade
 }
 
 function update_timezone {
@@ -583,8 +583,8 @@ mysql)
 	install_mysql
 	;;
 exim4)
-    install_exim4
-    ;;
+	install_exim4
+	;;
 nginx)
 	install_nginx
 	;;
@@ -595,14 +595,14 @@ dotdeb)
 	install_dotdeb
 	;;
 site)
-    install_site $2
-    ;;
+	install_site $2
+	;;
 iptables)
-    install_iptables $2
-    ;;
+	install_iptables $2
+	;;
 dropbear)
-    install_dropbear $2
-    ;;
+	install_dropbear $2
+	;;
 system)
 	update_timezone
 	remove_unneeded
@@ -610,24 +610,24 @@ system)
 	install_dash
 	install_vim
 	install_nano
-        install_htop
-        install_mc
-        install_iotop
-        install_iftop
+		install_htop
+		install_mc
+		install_iotop
+		install_iftop
 	install_syslogd
 	;;
 *)
 	echo 'Usage:' `basename $0` '[option] [argument]'
 	echo 'Available options (in recomended order):'
-	echo '  - dotdeb    (install dotdeb apt source for nginx +1.0)'
-	echo '  - system    (remove unneeded, upgrade system, install musthave software)'
-        echo '  - exim4     (install exim4 mail server)'
-	echo '  - dropbear  (SSH server)'
-	echo '  - iptables  (setup basic firewall with HTTP(S) open)'
-	echo '  - mysql	    (install MySQL and set root password)'
-	echo '  - nginx     (install nginx and create sample PHP vhosts)'
-	echo '  - php       (install PHP5-FPM with APC, GD, cURL, suhosin, etc..)'
-	echo '  - site      (create nginx vhost and /var/www/$site/public)'
+	echo '  - dotdeb     (install dotdeb apt source for nginx +1.0)'
+	echo '  - system     (remove unneeded, upgrade system, install musthave software)'
+	echo '  - exim4      (install exim4 mail server)'
+	echo '  - dropbear   (SSH server)'
+	echo '  - iptables   (setup basic firewall with HTTP(S) open)'
+	echo '  - mysql      (install MySQL and set root password)'
+	echo '  - nginx      (install nginx and create sample PHP vhosts)'
+	echo '  - php        (install PHP5-FPM with APC, GD, cURL, suhosin, etc..)'
+	echo '  - site       (create nginx vhost and /var/www/$site/public)'
 	echo '  '
 	;;
 esac
