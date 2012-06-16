@@ -18,20 +18,23 @@ Includes sample nginx config files for PHP sites. You can create a basic site sh
 
 When running the iptables or dropbear install you must specify a SSH port. Remember, port 22 is the default. It's recomended that you change this from 22 just to save server load from attacks on that port.
 
-## Usage (in recomended order):
-### Warning! This script is self destructive, it'll overwrite previous configs during reinstallation.
- wget --no-check-certificate https://raw.github.com/Xeoncross/lowendscript/master/setup-debian.sh
- bash setup-debian.sh dotdeb
- bash setup-debian.sh system
- bash setup-debian.sh dropbear 22  <b>*(or any other port number)</b>
- bash setup-debian.sh iptables
- bash setup-debian.sh mysql
- bash setup-debian.sh nginx
- bash setup-debian.sh php
- bash setup-debian.sh exim4
- bash setup-debian.sh site example.com
+## Usage (in recomended order)
 
-## After installation:
+### Warning! This script is self destructive, it'll overwrite previous configs during reinstallation.
+
+	wget --no-check-certificate https://raw.github.com/Xeoncross/lowendscript/master/setup-debian.sh
+	$ ./setup-debian.sh dotdeb
+	$ ./setup-debian.sh system
+	$ ./setup-debian.sh dropbear 22  <b>*(or any other port number)</b>
+	$ ./setup-debian.sh iptables
+	$ ./setup-debian.sh mysql
+	$ ./setup-debian.sh nginx
+	$ ./setup-debian.sh php
+	$ ./setup-debian.sh exim4
+	$ ./setup-debian.sh site example.com
+
+## After installation
+
 MySQL root is given a new password which is located in ~root/.my.cnf.
 After installing the full set, ram usage reaches ~40-45Mb.
 By default APC configured to use 16Mb for caching.
@@ -39,7 +42,8 @@ To reduce ram usage, you may disable APC by moving or deleting the following fil
 I recommend installing Ajenti and/or Webmin to manage your VPS.
 For security reasons delete, move or password protect "new_domain/public/phpinfo.php" file, which installed automatically on each new site installation.
 
-## Credits:
+## Credits
+
 [LowEndBox admin (LEA)](https://github.com/lowendbox/lowendscript),
 [Xeoncross](https://github.com/Xeoncross/lowendscript),
 [ilevkov](https://github.com/ilevkov/lowendscript) and many others.
