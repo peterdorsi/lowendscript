@@ -163,21 +163,11 @@ function install_exim4 {
 }
 
 function install_dotdeb {
-	# Disabling original DotDeb repos, using a faster mirrors
-	mv /etc/apt/sources.list /etc/apt/sources.list.orig
-cat > /etc/apt/sources.list <<END
-deb http://dotdeb.debian.skynet.be/ stable all
-deb-src http://dotdeb.debian.skynet.be/ stable all
-deb http://mirrors.kernel.org/debian/ squeeze main contrib non-free
-deb http://mirrors.usc.edu/pub/linux/distributions/debian/ squeeze main contrib non-free
-##buyvm.net mirror:
-#deb http://mirrors.buyvm.net/debian/ squeeze main contrib non-free
-END
-apt-get update
+	#echo "deb http://mirror.us.leaseweb.net/dotdeb/ stable all" >> /etc/apt/sources.list
+	#echo "deb-src http://mirror.us.leaseweb.net/dotdeb/ stable all" >> /etc/apt/sources.list
+	echo "deb http://packages.dotdeb.org squeeze all" >> /etc/apt/sources.list
+	echo "deb-src http://packages.dotdeb.org squeeze all" >> /etc/apt/sources.list
 	wget -q -O - http://www.dotdeb.org/dotdeb.gpg | apt-key add -
-		gpg --keyserver keys.gnupg.net --recv-key 89DF5277
-		gpg -a --export 89DF5277 | sudo apt-key add -
-		apt-get update
 }
 
 function install_syslogd {
@@ -207,15 +197,15 @@ END
 /var/log/cron
 /var/log/mail
 /var/log/messages {
-   rotate 4
-   weekly
-   missingok
-   notifempty
-   compress
-   sharedscripts
-   postrotate
-      /etc/init.d/inetutils-syslogd reload >/dev/null
-   endscript
+	rotate 4
+	weekly
+	missingok
+	notifempty
+	compress
+	sharedscripts
+	postrotate
+		/etc/init.d/inetutils-syslogd reload >/dev/null
+	endscript
 }
 END
 
@@ -223,30 +213,18 @@ END
 }
 
 function install_mysql {
-# Temporary disabling DotDeb repos
-mv /etc/apt/sources.list /etc/apt/sources.list.backup
-cat > /etc/apt/sources.list <<END
-#deb http://dotdeb.debian.skynet.be/ stable all
-#deb-src http://dotdeb.debian.skynet.be/ stable all
-deb http://mirrors.kernel.org/debian/ squeeze main contrib non-free
-deb http://mirrors.usc.edu/pub/linux/distributions/debian/ squeeze main contrib non-free
-##buyvm.net mirror:
-#deb http://mirrors.buyvm.net/debian/ squeeze main contrib non-free
-END
-apt-get update
+
 	# Install the MySQL packages
 	check_install mysqld mysql-server
 	check_install mysql mysql-client
-	# Enabling DotDeb repos
-	rm /etc/apt/sources.list
-	mv /etc/apt/sources.list.backup /etc/apt/sources.list
-	apt-get update
+
 	# Install a low-end copy of the my.cnf to disable InnoDB
 	invoke-rc.d mysql stop
 	cat > /etc/mysql/conf.d/lowendbox.cnf <<END
 [mysqld]
-key_buffer = 8M
+key_buffer = 12M
 query_cache_size = 0
+table_cache = 32
 
 ignore_builtin_innodb
 default_storage_engine=MyISAM
@@ -274,6 +252,9 @@ function install_php {
 
 	echo 'Using PHP-FPM to manage PHP processes'
 	echo ' '
+
+	mv /etc/php5/conf.d/apc.ini /etc/php5/conf.d/orig.apc.ini
+
 cat > /etc/php5/conf.d/apc.ini <<END
 [APC]
 extension=apc.so
@@ -290,6 +271,8 @@ apc.upload_max_filesize = 1000M
 apc.enable_cli=0
 apc.rfc1867=0
 END
+
+	mv /etc/php5/conf.d/suhosin.ini /etc/php5/conf.d/orig.suhosin.ini
 
 cat > /etc/php5/conf.d/suhosin.ini <<END
 ; configuration for php suhosin module
@@ -313,7 +296,7 @@ END
 			"s/post_max_size = 8M/post_max_size = 200M/" \
 			/etc/php5/fpm/php.ini
 		sed -i \
-			"s/memory_limit = 128M/memory_limit = 96M/" \
+			"s/memory_limit = 128M/memory_limit = 36M/" \
 			/etc/php5/fpm/php.ini
 	fi
 
@@ -322,23 +305,42 @@ invoke-rc.d php5-fpm restart
 }
 
 function install_nginx {
-		mkdir -p /var/www
+
 	check_install nginx nginx
+
+	mkdir -p /var/www
 
 	# PHP-safe default vhost
 	cat > /etc/nginx/sites-available/default_php <<END
 # Creates unlimited domains for PHP sites as long as you add the
-# entry to /etc/hosts and create the matching $host folder.
+# entry to /etc/hosts and create the matching \$host folder.
 server {
 	listen 80 default;
 	server_name _;
-	root /var/www/$host/public;
+	root /var/www/\$host/public;
 
 	# Directives to send expires headers and turn off 404 error logging.
-	#location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
-	#	expires 24h;
-	#	log_not_found off;
-	#}
+	location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+		expires max;
+		log_not_found off;
+		access_log off;
+	}
+
+	location = /favicon.ico {
+		log_not_found off;
+		access_log off;
+	}
+
+	location = /robots.txt {
+		allow all;
+		log_not_found off;
+		access_log off;
+	}
+
+	## Disable viewing .htaccess & .htpassword
+	location ~ /\.ht {
+		deny  all;
+	}
 
 	include /etc/nginx/php.conf;
 }
@@ -346,32 +348,49 @@ END
 
 	# MVC frameworks with only a single index.php entry point (nginx > 0.7.27)
 	cat > /etc/nginx/php.conf <<END
-index index.php index.html index.htm;
+index index.html index.php;
+
+# Route all requests for non-existent files to index.php
+location / {
+	try_files \$uri /index.php\$is_args\$args;
+}
+
+# Pass PHP scripts to php-fastcgi listening on port 9000
 location ~ \.php$ {
-  # Zero-day exploit defense.
+
+	# Zero-day exploit defense.
 	# http://forum.nginx.org/read.php?2,88845,page=3
-	# Won't work properly (404 error) if the file is not stored on this server, which is entirely possible with php-fpm/php-fcgi.
-	# Comment the 'try_files' line out if you set up php-fpm/php-fcgi on another machine.  And then cross your fingers that you won't get hacked. Turn this on for security.
-	try_files	   \$uri /index.php;
-	fastcgi_split_path_info ^(.+\.php)(/.+)$;
-	include /etc/nginx/fastcgi_params;
-	# As explained in http://kbeezie.com/view/php-self-path-nginx/ some fastcgi_param are missing from fastcgi_params.
-	# Keep these parameters for compatibility with old PHP scripts using them. Better to turn this on.
+	# Won't work properly (404 error) if the file is not stored on
+	# this server,  which is entirely possible with php-fpm/php-fcgi.
+	# Comment the 'try_files' line out if you set up php-fpm/php-fcgi
+	# on another machine.  And then cross your fingers that you won't get hacked.
+	try_files \$uri =404;
+
+	include fastcgi_params;
+
+	# Keep these parameters for compatibility with old PHP scripts using them.
 	fastcgi_param PATH_INFO \$fastcgi_path_info;
 	fastcgi_param PATH_TRANSLATED \$document_root\$fastcgi_path_info;
 	fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+
 	# Some default config
-	fastcgi_connect_timeout		60;
-	fastcgi_send_timeout		  180;
-	fastcgi_read_timeout		  180;
-	fastcgi_buffer_size		  128k;
-	fastcgi_buffers			4 256k;
-	fastcgi_busy_buffers_size	256k;
+	fastcgi_connect_timeout        20;
+	fastcgi_send_timeout          180;
+	fastcgi_read_timeout          180;
+	fastcgi_buffer_size          128k;
+	fastcgi_buffers            4 256k;
+	fastcgi_busy_buffers_size    256k;
 	fastcgi_temp_file_write_size 256k;
-	fastcgi_intercept_errors	on;
+	fastcgi_intercept_errors    on;
 	fastcgi_ignore_client_abort off;
 	fastcgi_pass 127.0.0.1:9000;
+
 }
+# PHP search for file Exploit:
+# The PHP regex location block fires instead of the try_files block. Therefore we need
+# to add "try_files \$uri =404;" to make sure that "/uploads/virusimage.jpg/hello.php"
+# never executes the hidden php code inside virusimage.jpg because it can't find hello.php!
+# The exploit also can be stopped by adding "cgi.fix_pathinfo = 0" in your php.ini file.
 END
 
 	echo 'Created /etc/nginx/php.conf for PHP sites'
@@ -406,8 +425,8 @@ Hello World
 END
 
 	# Setup test phpinfo.php file
-	 echo "<?php phpinfo(); ?>" > /var/www/$1/public/phpinfo.php
-	 chown www-data:www-data "/var/www/$1/public/phpinfo.php"
+	echo "<?php phpinfo(); ?>" > /var/www/$1/public/phpinfo.php
+	chown www-data:www-data "/var/www/$1/public/phpinfo.php"
 
 	# Setting up Nginx mapping
 	cat > "/etc/nginx/sites-available/$1.conf" <<END
@@ -420,22 +439,25 @@ server {
 	location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
 		expires max;
 		log_not_found off;
-				access_log off;
+		access_log off;
 	}
 
 	location = /favicon.ico {
 		log_not_found off;
 		access_log off;
 	}
+
 	location = /robots.txt {
 		allow all;
 		log_not_found off;
 		access_log off;
 	}
+
 	## Disable viewing .htaccess & .htpassword
 	location ~ /\.ht {
 		deny  all;
 	}
+
 	include /etc/nginx/php.conf;
 }
 END
@@ -446,8 +468,9 @@ END
 	chown www-data:www-data -R "/var/www/$1"
 
 	invoke-rc.d nginx restart
-print_warn "New site successfully installed."
-print_warn "You may can test PHP functionality by accessing $1/phpinfo.php"
+
+	print_warn "New site successfully installed."
+	print_warn "You may can test PHP functionality by accessing $1/phpinfo.php"
 }
 
 function install_iptables {
@@ -610,17 +633,17 @@ system)
 	install_dash
 	install_vim
 	install_nano
-		install_htop
-		install_mc
-		install_iotop
-		install_iftop
+	install_htop
+	install_mc
+	install_iotop
+	install_iftop
 	install_syslogd
 	;;
 *)
 	echo 'Usage:' `basename $0` '[option] [argument]'
 	echo 'Available options (in recomended order):'
 	echo '  - dotdeb     (install dotdeb apt source for nginx +1.0)'
-	echo '  - system     (remove unneeded, upgrade system, install musthave software)'
+	echo '  - system     (remove unneeded, upgrade system, install must-have software)'
 	echo '  - exim4      (install exim4 mail server)'
 	echo '  - dropbear   (SSH server)'
 	echo '  - iptables   (setup basic firewall with HTTP(S) open)'
