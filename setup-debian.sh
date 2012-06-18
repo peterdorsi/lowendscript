@@ -352,7 +352,7 @@ index index.html index.php;
 
 # Route all requests for non-existent files to index.php
 location / {
-	try_files \$uri /index.php\$is_args\$args;
+	try_files \$uri $uri/ /index.php\$is_args\$args;
 }
 
 # Pass PHP scripts to php-fastcgi listening on port 9000
@@ -434,6 +434,9 @@ server {
 	listen 80;
 	server_name www.$1 $1;
 	root /var/www/$1/public;
+
+	access_log  /var/www/$1/access.log;
+	error_log  /var/www/$1/error.log;
 
 	# Directives to send expires headers and turn off 404 error logging.
 	location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
