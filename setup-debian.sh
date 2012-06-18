@@ -244,7 +244,7 @@ END
 
 function install_php {
 	# PHP core
-	check_install php-fpm php-fpm
+	check_install php5-fpm php5-fpm
 	check_install php5-cli php5-cli
 
 	# PHP modules
@@ -300,7 +300,7 @@ END
 				/etc/php5/fpm/php.ini
 	fi
 
-	invoke-rc.d php-fpm restart
+	invoke-rc.d php5-fpm restart
 
 }
 
@@ -652,7 +652,7 @@ system)
 	echo '  - iptables   (setup basic firewall with HTTP(S) open)'
 	echo '  - mysql      (install MySQL and set root password)'
 	echo '  - nginx      (install nginx and create sample PHP vhosts)'
-	echo '  - php        (install PHP-FPM with APC, GD, cURL, suhosin, etc..)'
+	echo '  - php        (install PHP5-FPM with APC, GD, cURL, suhosin, etc..)'
 	echo '  - site       (create nginx vhost and /var/www/$site/public)'
 	echo '  '
 	;;
