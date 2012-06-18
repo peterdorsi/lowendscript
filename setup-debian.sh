@@ -49,7 +49,7 @@ function get_domain_name() {
 	domain=${1%.*}
 	lowest=`expr "$domain" : '.*\.\([a-z][a-z]*\)'`
 	case "$lowest" in
-	com|net|org|gov|edu|co)
+	com|net|org|gov|edu|co|me|info|name)
 		domain=${domain%.*}
 		;;
 	esac
@@ -476,6 +476,48 @@ END
 	print_warn "You may can test PHP functionality by accessing $1/phpinfo.php"
 }
 
+function install_mysqluser {
+
+	if [ -z "$1" ]
+	then
+		die "Usage: `basename $0` mysqluser [domain]"
+	fi
+
+	if [ ! -f "/var/www/$1/" ]
+		then
+			echo "no site found at /var/www/$1/"
+			exit 1
+	fi
+
+	# Setting up the MySQL database
+	dbname=`echo $1 | tr . _`
+	userid=`get_domain_name $1`
+	# MySQL userid cannot be more than 15 characters long
+	userid="${userid:0:15}"
+	passwd=`get_password "$userid@mysql"`
+
+	cat > "/var/www/$1/mysql.conf" <<END
+[mysql]
+user = $userid
+password = $passwd
+database = $dbname
+END
+	chmod 600 "/var/www/$1/mysql.conf"
+
+	mysqladmin create "$dbname"
+	echo "GRANT ALL PRIVILEGES ON \`$dbname\`.* TO \`$userid\`@localhost IDENTIFIED BY '$passwd';" | \
+		mysql
+
+	# We could also add these...
+	#echo "DROP USER '$userid'@'localhost';" | \ mysql
+	#echo "DROP DATABASE IF EXISTS  `$dbname` ;" | \ mysql
+
+	echo 'MySQL Username: ' $userid
+	echo 'MySQL Password: ' $passwd
+	echo 'MySQL Database: ' $dbname
+}
+
+
 function install_iptables {
 
 	check_install iptables
@@ -623,6 +665,9 @@ dotdeb)
 site)
 	install_site $2
 	;;
+mysqluser)
+	install_mysqluser $2
+	;;
 iptables)
 	install_iptables $2
 	;;
@@ -645,15 +690,16 @@ system)
 *)
 	echo 'Usage:' `basename $0` '[option] [argument]'
 	echo 'Available options (in recomended order):'
-	echo '  - dotdeb     (install dotdeb apt source for nginx +1.0)'
-	echo '  - system     (remove unneeded, upgrade system, install must-have software)'
-	echo '  - exim4      (install exim4 mail server)'
-	echo '  - dropbear   (SSH server)'
-	echo '  - iptables   (setup basic firewall with HTTP(S) open)'
-	echo '  - mysql      (install MySQL and set root password)'
-	echo '  - nginx      (install nginx and create sample PHP vhosts)'
-	echo '  - php        (install PHP5-FPM with APC, GD, cURL, suhosin, etc..)'
-	echo '  - site       (create nginx vhost and /var/www/$site/public)'
+	echo '  - dotdeb                 (install dotdeb apt source for nginx +1.0)'
+	echo '  - system                 (remove unneeded, upgrade system, install software)'
+	echo '  - exim4                  (install exim4 mail server)'
+	echo '  - dropbear  [port]       (SSH server)'
+	echo '  - iptables  [port]       (setup basic firewall with HTTP(S) open)'
+	echo '  - mysql                  (install MySQL and set root password)'
+	echo '  - nginx                  (install nginx and create sample PHP vhosts)'
+	echo '  - php                    (install PHP5-FPM with APC, cURL, suhosin, etc...)'
+	echo '  - site      [domain.tld] (create nginx vhost and /var/www/$site/public)'
+	echo '  - mysqluser [domain.tld] (create matching mysql user and database)'
 	echo '  '
 	;;
 esac
