@@ -520,9 +520,9 @@ function install_iptables {
 #-A INPUT -p tcp --dport 143 -j ACCEPT
 #-A INPUT -p tcp --dport 993 -j ACCEPT
 
-#  Allows SSH connections (only 3 attempts by an IP every 2 minutes, drop the rest to prevent SSH attacks)
+#  Allows SSH connections (only 3 attempts by an IP every minute, drop the rest to prevent SSH attacks)
 -A INPUT -p tcp -m tcp --dport $1 -m state --state NEW -m recent --set --name DEFAULT --rsource
--A INPUT -p tcp -m tcp --dport $1 -m state --state NEW -m recent --update --seconds 120 --hitcount 3 --name DEFAULT --rsource -j DROP
+-A INPUT -p tcp -m tcp --dport $1 -m state --state NEW -m recent --update --seconds 60 --hitcount 3 --name DEFAULT --rsource -j DROP
 -A INPUT -p tcp -m state --state NEW --dport $1 -j ACCEPT
 
 # Allow ping
