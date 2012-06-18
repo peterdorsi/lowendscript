@@ -244,7 +244,7 @@ END
 
 function install_php {
 	# PHP core
-	check_install php5-fpm php5-fpm
+	check_install php-fpm php-fpm
 	check_install php5-cli php5-cli
 
 	# PHP modules
