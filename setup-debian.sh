@@ -478,13 +478,11 @@ END
 
 function install_mysqluser {
 
-	if [ -z "$1" ]
-	then
+	if [ -z "$1" ] then
 		die "Usage: `basename $0` mysqluser [domain]"
 	fi
 
-	if [ ! -f "/var/www/$1/" ]
-		then
+	if [ ! -d "/var/www/$1/" ] then
 			echo "no site found at /var/www/$1/"
 			exit 1
 	fi
