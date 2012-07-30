@@ -318,6 +318,7 @@ server {
 	listen 80 default;
 	server_name _;
 	root /var/www/\$host/public;
+	index index.html index.php;
 
 	# Directives to send expires headers and turn off 404 error logging.
 	location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
@@ -348,11 +349,9 @@ END
 
 	# MVC frameworks with only a single index.php entry point (nginx > 0.7.27)
 	cat > /etc/nginx/php.conf <<END
-index index.html index.php;
-
 # Route all requests for non-existent files to index.php
 location / {
-	try_files \$uri $uri/ /index.php\$is_args\$args;
+	try_files \$uri \$uri/ /index.php\$is_args\$args;
 }
 
 # Pass PHP scripts to php-fastcgi listening on port 9000
