@@ -318,7 +318,7 @@ server {
 	listen 80 default;
 	server_name _;
 	root /var/www/\$host/public;
-	index index.html index.php;
+	index index.html index.htm index.php;
 
 	# Directives to send expires headers and turn off 404 error logging.
 	location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
