@@ -679,6 +679,19 @@ function install_webmin {
 	print_info "Not: If the installation ends with an error, please run it again"
 }
 
+############################################################
+# Network / IO tests
+############################################################
+function runtests {
+	print_info "Classic I/O test"
+	print_info "dd if=/dev/zero of=iotest bs=64k count=16k conv=fdatasync && rm -fr iotest"
+	dd if=/dev/zero of=iotest bs=64k count=16k conv=fdatasync && rm -fr iotest
+
+	print_info "Network test"
+	print_info "wget cachefly.cachefly.net/100mb.test -O 100mb.test && rm -fr 100mb.test"
+	wget cachefly.cachefly.net/100mb.test -O 100mb.test && rm -fr 100mb.test
+}
+
 function update_upgrade {
 	# Run through the apt-get update/upgrade first. This should be done before
 	# we try to install any package
@@ -733,6 +746,9 @@ vzfree)
 	;;
 webmin)
 	install_webmin
+	;;
+test)
+	runtests
 	;;
 system)
 	update_timezone
