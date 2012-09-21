@@ -777,5 +777,12 @@ system)
 	echo '  - site      [domain.tld] (create nginx vhost and /var/www/$site/public)'
 	echo '  - mysqluser [domain.tld] (create matching mysql user and database)'
 	echo '  '
+	echo '... and now some extras'
+	echo '  - apt                    (update sources.list for UBUNTU only)'
+	echo '  - ps_mem                 (Download the handy python script to report memory usage)'
+	echo '  - vzfree                 (Install vzfree for correct memory reporting on OpenVZ VPS)'
+	echo '  - webmin                 (Install Webmin for VPS management)'
+	echo '  - test                   (Run the classic disk IO and classic cachefly network test)'
+	echo '  '
 	;;
 esac
