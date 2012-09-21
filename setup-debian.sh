@@ -632,6 +632,17 @@ function remove_unneeded {
 	fi
 }
 
+############################################################
+# Download ps_mem.py
+############################################################
+
+function install_ps_mem {
+	wget http://www.pixelbeat.org/scripts/ps_mem.py -O ~/ps_mem.py
+	chmod 700 ~/ps_mem.py
+	print_info "ps_mem.py has been setup successfully"
+	print_warn "Use ~/ps_mem.py to execute"
+}
+
 function update_upgrade {
 	# Run through the apt-get update/upgrade first. This should be done before
 	# we try to install any package
@@ -677,6 +688,9 @@ iptables)
 	;;
 dropbear)
 	install_dropbear $2
+	;;
+ps_mem)
+	install_ps_mem
 	;;
 system)
 	update_timezone
