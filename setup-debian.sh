@@ -680,7 +680,7 @@ function install_webmin {
 }
 
 ############################################################
-# Network / IO tests
+# Classic Disk I/O and Network speed tests
 ############################################################
 function runtests {
 	print_info "Classic I/O test"
