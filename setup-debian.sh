@@ -659,6 +659,26 @@ function install_vzfree {
 	rm -fr ~/vzfree-0.1 ~/vzfree-0.1.tgz
 }
 
+############################################################
+# Install Webmin
+############################################################
+function install_webmin {
+	print_warn "Make sure you have update the apt file first RUN 'bash setup-debian.sh apt' TO UPDATE"
+	print_info "Downloading required packages"
+
+	# Temporary workaround at the moment, will fix it later
+	apt-get install -q -y perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl
+
+	# Making sure there are no other dependancies left
+	apt-get upgrade -q -y -f
+	print_info "Downloading Webmin"
+	wget http://www.webmin.com/download/deb/webmin-current.deb -O /tmp/webmin.deb
+	print_info "Installing webmin ..."
+	dpkg -i /tmp/webmin.deb
+	rm -fr /tmp/webmin.deb
+	print_info "Not: If the installation ends with an error, please run it again"
+}
+
 function update_upgrade {
 	# Run through the apt-get update/upgrade first. This should be done before
 	# we try to install any package
@@ -710,6 +730,9 @@ ps_mem)
 	;;
 vzfree)
 	install_vzfree
+	;;
+webmin)
+	install_webmin
 	;;
 system)
 	update_timezone
