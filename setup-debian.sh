@@ -643,6 +643,22 @@ function install_ps_mem {
 	print_warn "Use ~/ps_mem.py to execute"
 }
 
+############################################################
+# Install vzfree (Ubuntu OpenVZ containers only)
+############################################################
+function install_vzfree {
+	print_warn "build-essential package is now being installed which will take additional diskspace"
+	check_install build-essential build-essential
+	wget http://hostingfu.com/files/vzfree/vzfree-0.1.tgz -O ~/vzfree-0.1.tgz
+	tar -vxf ~/vzfree-0.1.tgz
+	cd ~/vzfree-0.1
+	make && make install
+	cd ~
+	vzfree
+	print_info "vzfree has been installed"
+	rm -fr ~/vzfree-0.1 ~/vzfree-0.1.tgz
+}
+
 function update_upgrade {
 	# Run through the apt-get update/upgrade first. This should be done before
 	# we try to install any package
@@ -691,6 +707,9 @@ dropbear)
 	;;
 ps_mem)
 	install_ps_mem
+	;;
+vzfree)
+	install_vzfree
 	;;
 system)
 	update_timezone
