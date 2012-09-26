@@ -725,9 +725,7 @@ function show_os_arch_version {
     OS_SUMMARY+=$ARCH
     OS_SUMMARY+="bit"
 
-    echo -n -e '\e[1;36m'
-    echo $OS_SUMMARY
-    echo -e '\e[0m'
+    print_info "$OS_SUMMARY"
 }
 
 function update_upgrade {
@@ -805,6 +803,8 @@ system)
 	install_syslogd
 	;;
 *)
+        show_os_arch_version
+        echo '  '
 	echo 'Usage:' `basename $0` '[option] [argument]'
 	echo 'Available options (in recomended order):'
 	echo '  - dotdeb                 (install dotdeb apt source for nginx +1.0)'
