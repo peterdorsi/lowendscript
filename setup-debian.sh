@@ -692,6 +692,25 @@ function runtests {
 	wget cachefly.cachefly.net/100mb.test -O 100mb.test && rm -fr 100mb.test
 }
 
+############################################################
+# Print OS summary (OS, ARCH, VERSION)
+############################################################
+function show_os_arch_version {
+    OS=$(awk '/DISTRIB_ID=/' /etc/*-release | sed 's/DISTRIB_ID=//')
+    ARCH=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
+    VERSION=$(awk '/DISTRIB_RELEASE=/' /etc/*-release | sed 's/DISTRIB_RELEASE=//')
+    OS_SUMMARY=$OS
+    OS_SUMMARY+=" "
+    OS_SUMMARY+=$VERSION
+    OS_SUMMARY+=" "
+    OS_SUMMARY+=$ARCH
+    OS_SUMMARY+="bit"
+
+    echo -n -e '\e[1;36m'
+    echo $OS_SUMMARY
+    echo -e '\e[0m'
+}
+
 function update_upgrade {
 	# Run through the apt-get update/upgrade first. This should be done before
 	# we try to install any package
@@ -750,6 +769,9 @@ webmin)
 test)
 	runtests
 	;;
+info)
+        show_os_arch_version
+        ;;
 system)
 	update_timezone
 	remove_unneeded
@@ -778,6 +800,7 @@ system)
 	echo '  - mysqluser [domain.tld] (create matching mysql user and database)'
 	echo '  '
 	echo '... and now some extras'
+        echo '  - info                   (Displays information about the OS, ARCH and VERSION)'
 	echo '  - apt                    (update sources.list for UBUNTU only)'
 	echo '  - ps_mem                 (Download the handy python script to report memory usage)'
 	echo '  - vzfree                 (Install vzfree for correct memory reporting on OpenVZ VPS)'
