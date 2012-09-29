@@ -689,7 +689,7 @@ function gen_ssh_key {
                 ssh-keygen -t dsa -b 1024 -f ~/id_rsa
                 print_warn "generated ~/id_rsa"
         else
-                #ssh-keygen -t dsa -b 1024 -f ~/"$1"
+                ssh-keygen -t dsa -b 1024 -f ~/"$1"
                 print_warn "generated ~/$1"
         fi
 }
