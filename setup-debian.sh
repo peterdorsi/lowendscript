@@ -257,7 +257,9 @@ function install_php {
 	echo 'Using PHP-FPM to manage PHP processes'
 	echo ' '
 
-	mv /etc/php5/conf.d/apc.ini /etc/php5/conf.d/orig.apc.ini
+        print_info "Taking configuration backups in /root/bkps; you may keep or delete this directory"
+        mkdir /root/bkps
+	mv /etc/php5/conf.d/apc.ini /root/bkps/apc.ini
 
 cat > /etc/php5/conf.d/apc.ini <<END
 [APC]
@@ -276,7 +278,7 @@ apc.enable_cli=0
 apc.rfc1867=0
 END
 
-	mv /etc/php5/conf.d/suhosin.ini /etc/php5/conf.d/orig.suhosin.ini
+	mv /etc/php5/conf.d/suhosin.ini /root/bkps/suhosin.ini
 
 cat > /etc/php5/conf.d/suhosin.ini <<END
 ; configuration for php suhosin module
