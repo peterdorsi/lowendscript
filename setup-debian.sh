@@ -680,6 +680,21 @@ function install_webmin {
 }
 
 ############################################################
+# Generate SSH Key
+############################################################
+function gen_ssh_key {
+        print_warn "Generating the ssh-key (1024 bit)"
+        if [ -z "$1" ]
+        then
+                ssh-keygen -t dsa -b 1024 -f ~/id_rsa
+                print_warn "generated ~/id_rsa"
+        else
+                #ssh-keygen -t dsa -b 1024 -f ~/"$1"
+                print_warn "generated ~/$1"
+        fi
+}
+
+############################################################
 # Classic Disk I/O and Network speed tests
 ############################################################
 function runtests {
@@ -783,6 +798,9 @@ vzfree)
 webmin)
 	install_webmin
 	;;
+sshkey)
+        gen_ssh_key $2
+        ;;
 test)
 	runtests
 	;;
