@@ -840,6 +840,7 @@ system)
 	echo '  '
 	echo '... and now some extras'
         echo '  - info                   (Displays information about the OS, ARCH and VERSION)'
+        echo '  - sshkey                 (Generate SSH key)'
 	echo '  - apt                    (update sources.list for UBUNTU only)'
 	echo '  - ps_mem                 (Download the handy python script to report memory usage)'
 	echo '  - vzfree                 (Install vzfree for correct memory reporting on OpenVZ VPS)'
