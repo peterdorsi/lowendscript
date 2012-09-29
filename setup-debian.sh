@@ -266,7 +266,7 @@ cat > /etc/php5/conf.d/apc.ini <<END
 extension=apc.so
 apc.enabled=1
 apc.shm_segments=1
-apc.shm_size=16
+apc.shm_size=16M
 apc.ttl=7200
 apc.user_ttl=7200
 apc.num_files_hint=1024
