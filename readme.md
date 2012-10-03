@@ -65,14 +65,14 @@ Updates Ubuntu /etc/apt/sources.list to default based on whatever version you ar
 
 ##### Info on Operating System, version and Architecture
 
-        $ ./setup-debian.sh info
+	$ ./setup-debian.sh info
 
 ##### SSH-Keys
 
 Either you want to generate ssh-keys (id_rsa) or a custom key for something (rsync etc)
 Note: argument is optional, if its left out, it will write "id_rsa" key
 
-        $ ./setup-debian.sh sshkey [optional argument_1]
+	$ ./setup-debian.sh sshkey [optional argument_1]
 
 ## After installation
 
