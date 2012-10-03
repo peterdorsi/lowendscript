@@ -85,6 +85,8 @@ For security reasons delete, move or password protect "new_domain/public/phpinfo
 
 ## Credits
 
-[LowEndBox admin (LEA)](https://github.com/lowendbox/lowendscript),
-[Xeoncross](https://github.com/Xeoncross/lowendscript),
-[ilevkov](https://github.com/ilevkov/lowendscript) and many others.
+- [LowEndBox admin (LEA)](https://github.com/lowendbox/lowendscript)
+- [Xeoncross](https://github.com/Xeoncross/lowendscript),
+- [ilevkov](https://github.com/ilevkov/lowendscript),
+- [asimzeeshan](https://github.com/asimzeeshan)
+- and many others!
