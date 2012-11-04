@@ -666,19 +666,27 @@ function install_vzfree {
 ############################################################
 function install_webmin {
 	print_warn "Make sure you have update the apt file first RUN 'bash setup-debian.sh apt' TO UPDATE"
-	print_info "Downloading required packages"
-
-	# Temporary workaround at the moment, will fix it later
-	apt-get install -q -y perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl
+	
+	print_info "Installing required packages"
+	check_install perl perl
+	check_install libnet-ssleay-perl libnet-ssleay-perl
+	check_install openssl openssl
+	check_install libauthen-pam-perl libauthen-pam-perl
+	check_install libpam-runtime libpam-runtime
+	check_install libio-pty-perl libio-pty-perl
+	check_install libapt-pkg-perl libapt-pkg-perl
+	check_install apt-show-versions apt-show-versions
 
 	# Making sure there are no other dependancies left
 	apt-get upgrade -q -y -f
+	
+	# Download and install Webmin
 	print_info "Downloading Webmin"
 	wget http://www.webmin.com/download/deb/webmin-current.deb -O /tmp/webmin.deb
 	print_info "Installing webmin ..."
 	dpkg -i /tmp/webmin.deb
 	rm -fr /tmp/webmin.deb
-	print_info "Not: If the installation ends with an error, please run it again"
+	print_warn "Special Note: If the installation ends with an error, please run it again"
 }
 
 ############################################################
