@@ -1,4 +1,4 @@
-## Debian 6 VPS Script
+## Debian 6 VPS Script (works with Ubuntu as well)
 
 Remove excess packages (apache2, sendmail, bind9, samba, nscd, etc) and install the basic components needed for a light-weight HTTP(S) web server:
 
@@ -23,7 +23,7 @@ When running the iptables or dropbear install you must specify a SSH port. Remem
 ### Warning! This script is self destructive, it'll overwrite previous configs during reinstallation.
 
 	wget --no-check-certificate https://raw.github.com/Xeoncross/lowendscript/master/setup-debian.sh
-	$ ./setup-debian.sh dotdeb
+	$ ./setup-debian.sh dotdeb # not required on Ubuntu
 	$ ./setup-debian.sh system
 	$ ./setup-debian.sh dropbear 22  <b>*(or any other port number)</b>
 	$ ./setup-debian.sh iptables
@@ -87,4 +87,5 @@ For security reasons delete, move or password protect "new_domain/public/phpinfo
 
 [LowEndBox admin (LEA)](https://github.com/lowendbox/lowendscript),
 [Xeoncross](https://github.com/Xeoncross/lowendscript),
+[Asim Zeeshan](https://github.com/asimzeeshan/lowendscript),
 [ilevkov](https://github.com/ilevkov/lowendscript) and many others.
