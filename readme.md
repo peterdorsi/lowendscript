@@ -73,6 +73,16 @@ Either you want to generate ssh-keys (id_rsa) or a custom key for something (rsy
 Note: argument is optional, if its left out, it will write "id_rsa" key
 
 	$ ./setup-debian.sh sshkey [optional argument_1]
+	
+##### Extras
+
+Fixing locale on some OpenVZ Ubuntu templates
+
+	$ ./setup-debian.sh locale
+	
+Configure or reconfigure MOTD
+
+ 	$ ./setup-debian.sh motd
 
 ## After installation
 
