@@ -664,7 +664,7 @@ function install_vzfree {
 # Install Webmin
 ############################################################
 function install_webmin {
-	print_warn "Make sure you have update the apt file first RUN 'bash setup-debian.sh apt' TO UPDATE"
+	print_warn "Make sure you have update the apt file first RUN 'bash `basename $0` apt' to update the /etc/apt/sources.list"
 	
 	print_info "Installing required packages"
 	check_install perl perl
@@ -701,6 +701,16 @@ function gen_ssh_key {
 		ssh-keygen -t dsa -b 1024 -f ~/"$1"
 		print_warn "generated ~/$1"
 	fi
+}
+
+############################################################
+# Configure MOTD at login
+############################################################
+function configure_motd {
+	apt-get clean all
+	update_upgrade
+	check_install landscape-common landscape-common
+	dpkg-reconfigure landscape-common
 }
 
 ############################################################
@@ -750,6 +760,10 @@ function show_os_arch_version {
 	OS_SUMMARY+="bit"
 	
 	print_info "$OS_SUMMARY"
+}
+
+function apt_clean_all {
+	apt-get clean all
 }
 
 function update_upgrade {
@@ -813,6 +827,9 @@ webmin)
 sshkey)
 	gen_ssh_key $2
 	;;
+motd)
+	configure_motd
+	;;
 test)
 	runtests
 	;;
@@ -849,6 +866,7 @@ system)
 	echo '  - mysqluser [domain.tld] (create matching mysql user and database)'
 	echo '  '
 	echo '... and now some extras'
+	echo '  - motd                   (Configures and enables the default MOTD)'
 	echo '  - info                   (Displays information about the OS, ARCH and VERSION)'
 	echo '  - sshkey                 (Generate SSH key)'
 	echo '  - apt                    (update sources.list for UBUNTU only)'
