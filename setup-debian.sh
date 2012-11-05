@@ -707,7 +707,7 @@ function gen_ssh_key {
 # Configure MOTD at login
 ############################################################
 function configure_motd {
-	apt-get clean all
+	apt_clean_all
 	update_upgrade
 	check_install landscape-common landscape-common
 	dpkg-reconfigure landscape-common
