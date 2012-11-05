@@ -14,7 +14,7 @@ Remove excess packages (apache2, sendmail, bind9, samba, nscd, etc) and install 
 
 Includes sample nginx config files for PHP sites. You can create a basic site shell (complete with nginx vhost) like this:
 
-./setup-debian.sh site example.com
+	$ ./setup-debian.sh site example.com
 
 When running the iptables or dropbear install you must specify a SSH port. Remember, port 22 is the default. It's recomended that you change this from 22 just to save server load from attacks on that port.
 
@@ -23,9 +23,9 @@ When running the iptables or dropbear install you must specify a SSH port. Remem
 ### Warning! This script is self destructive, it'll overwrite previous configs during reinstallation.
 
 	wget --no-check-certificate https://raw.github.com/Xeoncross/lowendscript/master/setup-debian.sh
-	$ ./setup-debian.sh dotdeb
+	$ ./setup-debian.sh dotdeb # not required if using Ubuntu
 	$ ./setup-debian.sh system
-	$ ./setup-debian.sh dropbear 22  <b>*(or any other port number)</b>
+	$ ./setup-debian.sh dropbear 22  # or any other port number
 	$ ./setup-debian.sh iptables
 	$ ./setup-debian.sh mysql
 	$ ./setup-debian.sh nginx
