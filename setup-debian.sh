@@ -762,6 +762,20 @@ function show_os_arch_version {
 	print_info "$OS_SUMMARY"
 }
 
+############################################################
+# Fix locale for OpenVZ Ubuntu templates
+############################################################
+function fix_locale {
+	check_install multipath-tools multipath-tools
+	export LANGUAGE=en_US.UTF-8
+	export LANG=en_US.UTF-8
+	export LC_ALL=en_US.UTF-8
+	
+	# Generate locale
+	locale-gen en_US.UTF-8
+	dpkg-reconfigure locales
+}
+
 function apt_clean_all {
 	apt-get clean all
 }
@@ -830,6 +844,9 @@ sshkey)
 motd)
 	configure_motd
 	;;
+locale)
+	fix_locale
+	;;
 test)
 	runtests
 	;;
@@ -874,6 +891,7 @@ system)
 	echo '  - vzfree                 (Install vzfree for correct memory reporting on OpenVZ VPS)'
 	echo '  - webmin                 (Install Webmin for VPS management)'
 	echo '  - test                   (Run the classic disk IO and classic cachefly network test)'
+	echo '  - locale				 (Fix locales issue with OpenVZ Ubuntu templates)'
 	echo '  '
 	;;
 esac
