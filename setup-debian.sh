@@ -637,7 +637,6 @@ function remove_unneeded {
 ############################################################
 # Download ps_mem.py
 ############################################################
-
 function install_ps_mem {
 	wget http://www.pixelbeat.org/scripts/ps_mem.py -O ~/ps_mem.py
 	chmod 700 ~/ps_mem.py
@@ -646,7 +645,7 @@ function install_ps_mem {
 }
 
 ############################################################
-# Install vzfree (Ubuntu OpenVZ containers only)
+# Install vzfree (OpenVZ containers only)
 ############################################################
 function install_vzfree {
 	print_warn "build-essential package is now being installed which will take additional diskspace"
@@ -676,7 +675,7 @@ function install_webmin {
 	check_install libio-pty-perl libio-pty-perl
 	check_install libapt-pkg-perl libapt-pkg-perl
 	check_install apt-show-versions apt-show-versions
-
+	
 	# Making sure there are no other dependancies left
 	apt-get upgrade -q -y -f
 	
@@ -693,15 +692,15 @@ function install_webmin {
 # Generate SSH Key
 ############################################################
 function gen_ssh_key {
-        print_warn "Generating the ssh-key (1024 bit)"
-        if [ -z "$1" ]
-        then
-                ssh-keygen -t dsa -b 1024 -f ~/id_rsa
-                print_warn "generated ~/id_rsa"
-        else
-                ssh-keygen -t dsa -b 1024 -f ~/"$1"
-                print_warn "generated ~/$1"
-        fi
+	print_warn "Generating the ssh-key (1024 bit)"
+	if [ -z "$1" ]
+	then
+		ssh-keygen -t dsa -b 1024 -f ~/id_rsa
+		print_warn "generated ~/id_rsa"
+	else
+		ssh-keygen -t dsa -b 1024 -f ~/"$1"
+		print_warn "generated ~/$1"
+	fi
 }
 
 ############################################################
@@ -711,7 +710,7 @@ function runtests {
 	print_info "Classic I/O test"
 	print_info "dd if=/dev/zero of=iotest bs=64k count=16k conv=fdatasync && rm -fr iotest"
 	dd if=/dev/zero of=iotest bs=64k count=16k conv=fdatasync && rm -fr iotest
-
+	
 	print_info "Network test"
 	print_info "wget cachefly.cachefly.net/100mb.test -O 100mb.test && rm -fr 100mb.test"
 	wget cachefly.cachefly.net/100mb.test -O 100mb.test && rm -fr 100mb.test
@@ -721,36 +720,36 @@ function runtests {
 # Print OS summary (OS, ARCH, VERSION)
 ############################################################
 function show_os_arch_version {
-    # Thanks for Mikel (http://unix.stackexchange.com/users/3169/mikel) for the code sample which was later modified a bit
-    # http://unix.stackexchange.com/questions/6345/how-can-i-get-distribution-name-and-version-number-in-a-simple-shell-script
-    ARCH=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
+	# Thanks for Mikel (http://unix.stackexchange.com/users/3169/mikel) for the code sample which was later modified a bit
+	# http://unix.stackexchange.com/questions/6345/how-can-i-get-distribution-name-and-version-number-in-a-simple-shell-script
+	ARCH=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
 
-    if [ -f /etc/lsb-release ]; then
-        . /etc/lsb-release
-        OS=$DISTRIB_ID
-        VERSION=$DISTRIB_RELEASE
-    elif [ -f /etc/debian_version ]; then
-        # Work on Debian and Ubuntu alike
-        OS=$(lsb_release -si)
-        VERSION=$(lsb_release -sr)
-    elif [ -f /etc/redhat-release ]; then
-        # Add code for Red Hat and CentOS here
-        OS=Redhat
-        VERSION=$(uname -r)
-    else
-        # Pretty old OS? fallback to compatibility mode
-        OS=$(uname -s)
-        VERSION=$(uname -r)
-    fi
+	if [ -f /etc/lsb-release ]; then
+		. /etc/lsb-release
+		OS=$DISTRIB_ID
+		VERSION=$DISTRIB_RELEASE
+	elif [ -f /etc/debian_version ]; then
+		# Work on Debian and Ubuntu alike
+		OS=$(lsb_release -si)
+		VERSION=$(lsb_release -sr)
+	elif [ -f /etc/redhat-release ]; then
+		# Add code for Red Hat and CentOS here
+		OS=Redhat
+		VERSION=$(uname -r)
+	else
+		# Pretty old OS? fallback to compatibility mode
+		OS=$(uname -s)
+		VERSION=$(uname -r)
+	fi
 
-    OS_SUMMARY=$OS
-    OS_SUMMARY+=" "
-    OS_SUMMARY+=$VERSION
-    OS_SUMMARY+=" "
-    OS_SUMMARY+=$ARCH
-    OS_SUMMARY+="bit"
-
-    print_info "$OS_SUMMARY"
+	OS_SUMMARY=$OS
+	OS_SUMMARY+=" "
+	OS_SUMMARY+=$VERSION
+	OS_SUMMARY+=" "
+	OS_SUMMARY+=$ARCH
+	OS_SUMMARY+="bit"
+	
+	print_info "$OS_SUMMARY"
 }
 
 function update_upgrade {
@@ -758,6 +757,9 @@ function update_upgrade {
 	# we try to install any package
 	apt-get -q -y update
 	apt-get -q -y upgrade
+	
+	# also remove the orphaned stuf
+	apt-get -q -y autoremove
 }
 
 function update_timezone {
@@ -809,14 +811,14 @@ webmin)
 	install_webmin
 	;;
 sshkey)
-        gen_ssh_key $2
-        ;;
+	gen_ssh_key $2
+	;;
 test)
 	runtests
 	;;
 info)
-        show_os_arch_version
-        ;;
+	show_os_arch_version
+	;;
 system)
 	update_timezone
 	remove_unneeded
@@ -831,8 +833,8 @@ system)
 	install_syslogd
 	;;
 *)
-        show_os_arch_version
-        echo '  '
+	show_os_arch_version
+	echo '  '
 	echo 'Usage:' `basename $0` '[option] [argument]'
 	echo 'Available options (in recomended order):'
 	echo '  - dotdeb                 (install dotdeb apt source for nginx +1.0)'
@@ -847,8 +849,8 @@ system)
 	echo '  - mysqluser [domain.tld] (create matching mysql user and database)'
 	echo '  '
 	echo '... and now some extras'
-        echo '  - info                   (Displays information about the OS, ARCH and VERSION)'
-        echo '  - sshkey                 (Generate SSH key)'
+	echo '  - info                   (Displays information about the OS, ARCH and VERSION)'
+	echo '  - sshkey                 (Generate SSH key)'
 	echo '  - apt                    (update sources.list for UBUNTU only)'
 	echo '  - ps_mem                 (Download the handy python script to report memory usage)'
 	echo '  - vzfree                 (Install vzfree for correct memory reporting on OpenVZ VPS)'
