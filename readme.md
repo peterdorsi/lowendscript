@@ -65,14 +65,14 @@ Updates Ubuntu /etc/apt/sources.list to default based on whatever version you ar
 
 ##### Info on Operating System, version and Architecture
 
-        $ ./setup-debian.sh info
+	$ ./setup-debian.sh info
 
 ##### SSH-Keys
 
 Either you want to generate ssh-keys (id_rsa) or a custom key for something (rsync etc)
 Note: argument is optional, if its left out, it will write "id_rsa" key
 
-        $ ./setup-debian.sh sshkey [optional argument_1]
+	$ ./setup-debian.sh sshkey [optional argument_1]
 
 ## After installation
 
@@ -85,6 +85,8 @@ For security reasons delete, move or password protect "new_domain/public/phpinfo
 
 ## Credits
 
-[LowEndBox admin (LEA)](https://github.com/lowendbox/lowendscript),
-[Xeoncross](https://github.com/Xeoncross/lowendscript),
-[ilevkov](https://github.com/ilevkov/lowendscript) and many others.
+- [LowEndBox admin (LEA)](https://github.com/lowendbox/lowendscript)
+- [Xeoncross](https://github.com/Xeoncross/lowendscript),
+- [ilevkov](https://github.com/ilevkov/lowendscript),
+- [asimzeeshan](https://github.com/asimzeeshan)
+- and many others!
