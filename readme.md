@@ -32,6 +32,7 @@ When running the iptables or dropbear install you must specify a SSH port. Remem
 	$ ./setup-debian.sh php
 	$ ./setup-debian.sh exim4
 	$ ./setup-debian.sh site example.com
+	$ ./setup-debian.sh wordpress example.com
 
 #### ... and now time for some extras
 
