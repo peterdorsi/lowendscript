@@ -482,139 +482,6 @@ END
 	print_warn "You may can test PHP functionality by accessing $1/phpinfo.php"
 }
 
-############################################################
-# Install WordPress
-############################################################
-function install_wordpress {
-
-	if [ -z "$1" ]
-	then
-		die "Usage: `basename $0` wordpress [domain]"
-	fi
-
-	# Setup folder
-	mkdir /var/www/$1
-	mkdir /var/www/$1/public
-
-	# Downloading the WordPress' latest and greatest distribution.
-	mkdir /tmp/wordpress.$$
-	wget -O - http://wordpress.org/latest.tar.gz | \
-		tar zxf - -C /tmp/wordpress.$$
-	cp -a /tmp/wordpress.$$/wordpress/. "/var/www/$1/public"
-	rm -rf /tmp/wordpress.$$
-
-	# Setting up the MySQL database
-	dbname=`echo $1 | tr . _`
-	echo Database Name = 'echo $1 | tr . _'
-	userid=`get_domain_name $1`
-	# MySQL userid cannot be more than 15 characters long
-	userid="${userid:0:15}"
-	passwd=`get_password "$userid@mysql"`
-	# Write wp.config file
-	cp "/var/www/$1/public/wp-config-sample.php" "/var/www/$1/public/wp-config.php"
-	salt=$(curl -L https://api.wordpress.org/secret-key/1.1/salt/)
-	defineString='put your unique phrase here'
-	printf '%s\n' "g/$defineString/d" a "$salt" . w | ed -s /var/www/$1/public/wp-config.php
-	sed -i "s/database_name_here/$dbname/; s/username_here/$userid/; s/password_here/$passwd/" \
-		"/var/www/$1/public/wp-config.php"
-
-		cat > "/var/www/$1/mysql.conf" <<END
-[mysql]
-user = $userid
-password = $passwd
-database = $dbname
-END
-	chmod 600 "/var/www/$1/mysql.conf"
-
-	mysqladmin create "$dbname"
-	echo "GRANT ALL PRIVILEGES ON \`$dbname\`.* TO \`$userid\`@localhost IDENTIFIED BY '$passwd';" | \
-        mysql
-
-	# Setting up Nginx mapping
-	cat > "/etc/nginx/sites-available/$1.conf" <<END
-server {
-	listen 80;
-	server_name www.$1 $1;
-	root /var/www/$1/public;
-	index index.php;
-
-	access_log  /var/www/$1/access.log;
-	error_log  /var/www/$1/error.log;
-
-	# unless the request is for a valid file, send to bootstrap
-	if (!-e $request_filename)
-	{
-		rewrite ^(.+)$ /index.php?q=$1 last;
-	}
-
-	# catch all
-	error_page 404 /index.php;
-
-	# Directives to send expires headers and turn off 404 error logging.
-	location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
-		expires max;
-		log_not_found off;
-		access_log off;
-	}
-
-	location = /favicon.ico {
-		log_not_found off;
-		access_log off;
-	}
-
-	location = /robots.txt {
-		allow all;
-		log_not_found off;
-		access_log off;
-	}
-
-	## Disable viewing .htaccess & .htpassword
-	location ~ /\.ht {
-		deny  all;
-	}
-
-	location / {
-		# This is cool because no php is touched for static content. 
-		# include the "?$args" part so non-default permalinks doesn't break when using query string
-		try_files $uri $uri/ /index.php?$args;
-	}
-
-	# use fastcgi for all php files
-	location ~ \.php$
-	{
-		try_files $uri =404;
-
-		fastcgi_pass 127.0.0.1:9000;
-		fastcgi_index index.php;
-		fastcgi_param SCRIPT_FILENAME /var/www/$1/public$fastcgi_script_name;
-		include fastcgi_params;
-
-		# Some default config
-		fastcgi_connect_timeout        20;
-		fastcgi_send_timeout          180;
-		fastcgi_read_timeout          180;
-		fastcgi_buffer_size          128k;
-		fastcgi_buffers            4 256k;
-		fastcgi_busy_buffers_size    256k;
-		fastcgi_temp_file_write_size 256k;
-		fastcgi_intercept_errors    on;
-		fastcgi_ignore_client_abort off;
-	}
-
-}
-
-END
-	# Create the link so nginx can find it
-	ln -s /etc/nginx/sites-available/$1.conf /etc/nginx/sites-enabled/$1.conf
-
-	# PHP/Nginx needs permission to access this
-	chown www-data:www-data -R "/var/www/$1"
-
-	invoke-rc.d nginx restart
-
-	print_warn "New wordpress site successfully installed."
-}
-
 function install_mysqluser {
 
 	if [ -z "$1" ]
@@ -853,7 +720,7 @@ function runtests {
 	print_info "Classic I/O test"
 	print_info "dd if=/dev/zero of=iotest bs=64k count=16k conv=fdatasync && rm -fr iotest"
 	dd if=/dev/zero of=iotest bs=64k count=16k conv=fdatasync && rm -fr iotest
-	
+
 	print_info "Network test"
 	print_info "wget cachefly.cachefly.net/100mb.test -O 100mb.test && rm -fr 100mb.test"
 	wget cachefly.cachefly.net/100mb.test -O 100mb.test && rm -fr 100mb.test
@@ -863,36 +730,36 @@ function runtests {
 # Print OS summary (OS, ARCH, VERSION)
 ############################################################
 function show_os_arch_version {
-	# Thanks for Mikel (http://unix.stackexchange.com/users/3169/mikel) for the code sample which was later modified a bit
-	# http://unix.stackexchange.com/questions/6345/how-can-i-get-distribution-name-and-version-number-in-a-simple-shell-script
-	ARCH=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
+    # Thanks for Mikel (http://unix.stackexchange.com/users/3169/mikel) for the code sample which was later modified a bit
+    # http://unix.stackexchange.com/questions/6345/how-can-i-get-distribution-name-and-version-number-in-a-simple-shell-script
+    ARCH=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
 
-	if [ -f /etc/lsb-release ]; then
-		. /etc/lsb-release
-		OS=$DISTRIB_ID
-		VERSION=$DISTRIB_RELEASE
-	elif [ -f /etc/debian_version ]; then
-		# Work on Debian and Ubuntu alike
-		OS=$(lsb_release -si)
-		VERSION=$(lsb_release -sr)
-	elif [ -f /etc/redhat-release ]; then
-		# Add code for Red Hat and CentOS here
-		OS=Redhat
-		VERSION=$(uname -r)
-	else
-		# Pretty old OS? fallback to compatibility mode
-		OS=$(uname -s)
-		VERSION=$(uname -r)
-	fi
+    if [ -f /etc/lsb-release ]; then
+        . /etc/lsb-release
+        OS=$DISTRIB_ID
+        VERSION=$DISTRIB_RELEASE
+    elif [ -f /etc/debian_version ]; then
+        # Work on Debian and Ubuntu alike
+        OS=$(lsb_release -si)
+        VERSION=$(lsb_release -sr)
+    elif [ -f /etc/redhat-release ]; then
+        # Add code for Red Hat and CentOS here
+        OS=Redhat
+        VERSION=$(uname -r)
+    else
+        # Pretty old OS? fallback to compatibility mode
+        OS=$(uname -s)
+        VERSION=$(uname -r)
+    fi
 
-	OS_SUMMARY=$OS
-	OS_SUMMARY+=" "
-	OS_SUMMARY+=$VERSION
-	OS_SUMMARY+=" "
-	OS_SUMMARY+=$ARCH
-	OS_SUMMARY+="bit"
-	
-	print_info "$OS_SUMMARY"
+    OS_SUMMARY=$OS
+    OS_SUMMARY+=" "
+    OS_SUMMARY+=$VERSION
+    OS_SUMMARY+=" "
+    OS_SUMMARY+=$ARCH
+    OS_SUMMARY+="bit"
+
+    print_info "$OS_SUMMARY"
 }
 
 ############################################################
@@ -975,8 +842,8 @@ webmin)
 	install_webmin
 	;;
 sshkey)
-	gen_ssh_key $2
-	;;
+    gen_ssh_key $2
+    ;;
 motd)
 	configure_motd
 	;;
@@ -1003,8 +870,8 @@ system)
 	install_syslogd
 	;;
 *)
-	show_os_arch_version
-	echo '  '
+    show_os_arch_version
+    echo '  '
 	echo 'Usage:' `basename $0` '[option] [argument]'
 	echo 'Available options (in recomended order):'
 	echo '  - dotdeb                 (install dotdeb apt source for nginx +1.0)'
@@ -1016,19 +883,17 @@ system)
 	echo '  - nginx                  (install nginx and create sample PHP vhosts)'
 	echo '  - php                    (install PHP5-FPM with APC, cURL, suhosin, etc...)'
 	echo '  - site      [domain.tld] (create nginx vhost and /var/www/$site/public)'
-	echo '  - wordpress [domain.tld] (create nginx vhost and /var/www/$wordpress/public)'
+	echo '  - wordpress      [domain.tld] (create nginx vhost and /var/www/$wordpress/public)'
 	echo '  - mysqluser [domain.tld] (create matching mysql user and database)'
 	echo '  '
 	echo '... and now some extras'
-	echo '  - motd                   (Configures and enables the default MOTD)'
-	echo '  - info                   (Displays information about the OS, ARCH and VERSION)'
-	echo '  - sshkey                 (Generate SSH key)'
+    echo '  - info                   (Displays information about the OS, ARCH and VERSION)'
+    echo '  - sshkey                 (Generate SSH key)'
 	echo '  - apt                    (update sources.list for UBUNTU only)'
 	echo '  - ps_mem                 (Download the handy python script to report memory usage)'
 	echo '  - vzfree                 (Install vzfree for correct memory reporting on OpenVZ VPS)'
 	echo '  - webmin                 (Install Webmin for VPS management)'
 	echo '  - test                   (Run the classic disk IO and classic cachefly network test)'
-	echo '  - locale				 (Fix locales issue with OpenVZ Ubuntu templates)'
 	echo '  '
 	;;
 esac

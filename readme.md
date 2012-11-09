@@ -14,7 +14,7 @@ Remove excess packages (apache2, sendmail, bind9, samba, nscd, etc) and install 
 
 Includes sample nginx config files for PHP sites. You can create a basic site shell (complete with nginx vhost) like this:
 
-	$ ./setup-debian.sh site example.com
+./setup-debian.sh site example.com
 
 When running the iptables or dropbear install you must specify a SSH port. Remember, port 22 is the default. It's recomended that you change this from 22 just to save server load from attacks on that port.
 
@@ -74,16 +74,16 @@ Either you want to generate ssh-keys (id_rsa) or a custom key for something (rsy
 Note: argument is optional, if its left out, it will write "id_rsa" key
 
 	$ ./setup-debian.sh sshkey [optional argument_1]
-	
+    
 ##### Extras
 
 Fixing locale on some OpenVZ Ubuntu templates
 
 	$ ./setup-debian.sh locale
-	
+
 Configure or reconfigure MOTD
 
- 	$ ./setup-debian.sh motd
+	$ ./setup-debian.sh motd
 
 ## After installation
 
@@ -99,5 +99,6 @@ For security reasons delete, move or password protect "new_domain/public/phpinfo
 - [LowEndBox admin (LEA)](https://github.com/lowendbox/lowendscript)
 - [Xeoncross](https://github.com/Xeoncross/lowendscript),
 - [ilevkov](https://github.com/ilevkov/lowendscript),
-- [Asim Zeeshan](https://github.com/asimzeeshan)
+- [asimzeeshan](https://github.com/asimzeeshan)
 - and many others!
+
