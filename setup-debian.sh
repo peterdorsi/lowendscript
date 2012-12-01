@@ -1013,8 +1013,8 @@ webmin)
 	install_webmin
 	;;
 sshkey)
-    gen_ssh_key $2
-    ;;
+	gen_ssh_key $2
+	;;
 motd)
 	configure_motd
 	;;
@@ -1041,8 +1041,8 @@ system)
 	install_syslogd
 	;;
 *)
-    show_os_arch_version
-    echo '  '
+	show_os_arch_version
+	echo '  '
 	echo 'Usage:' `basename $0` '[option] [argument]'
 	echo 'Available options (in recomended order):'
 	echo '  - dotdeb                 (install dotdeb apt source for nginx +1.0)'
