@@ -488,7 +488,7 @@ function install_wordpress {
 	then
 		die "Usage: `basename $0` wordpress [domain]"
 	fi
-	
+
 	# Setup folder
 	mkdir /var/www/$1
 	mkdir /var/www/$1/public
@@ -499,7 +499,7 @@ function install_wordpress {
         tar zxf - -C /tmp/wordpress.$$
     cp -a /tmp/wordpress.$$/wordpress/. "/var/www/$1/public"
     rm -rf /tmp/wordpress.$$
-    	
+
 	# Setting up the MySQL database
     dbname=`echo $1 | tr . _`
 	echo Database Name = 'echo $1 | tr . _'
@@ -514,7 +514,7 @@ function install_wordpress {
 	printf '%s\n' "g/$defineString/d" a "$salt" . w | ed -s /var/www/$1/public/wp-config.php
     sed -i "s/database_name_here/$dbname/; s/username_here/$userid/; s/password_here/$passwd/" \
         "/var/www/$1/public/wp-config.php"
-		
+
 		cat > "/var/www/$1/mysql.conf" <<END
 [mysql]
 user = $userid
@@ -522,11 +522,11 @@ password = $passwd
 database = $dbname
 END
 	chmod 600 "/var/www/$1/mysql.conf"
-		
+
     mysqladmin create "$dbname"
     echo "GRANT ALL PRIVILEGES ON \`$dbname\`.* TO \`$userid\`@localhost IDENTIFIED BY '$passwd';" | \
         mysql
-	
+
 	# Setting up Nginx mapping
 	cat > "/etc/nginx/sites-available/$1.conf" <<END
 server {
@@ -596,9 +596,9 @@ server {
         fastcgi_temp_file_write_size 256k;
         fastcgi_intercept_errors    on;
         fastcgi_ignore_client_abort off;
-        
+
     }
- 
+
 }
 
 
@@ -797,7 +797,7 @@ function install_vzfree {
 ############################################################
 function install_webmin {
 	print_warn "Make sure you have update the apt file first RUN 'bash `basename $0` apt' to update the /etc/apt/sources.list"
-	
+
 	print_info "Installing required packages"
 	check_install perl perl
 	check_install libnet-ssleay-perl libnet-ssleay-perl
@@ -807,10 +807,10 @@ function install_webmin {
 	check_install libio-pty-perl libio-pty-perl
 	check_install libapt-pkg-perl libapt-pkg-perl
 	check_install apt-show-versions apt-show-versions
-	
+
 	# Making sure there are no other dependancies left
 	apt-get upgrade -q -y -f
-	
+
 	# Download and install Webmin
 	print_info "Downloading Webmin"
 	wget http://www.webmin.com/download/deb/webmin-current.deb -O /tmp/webmin.deb
@@ -902,7 +902,7 @@ function fix_locale {
 	export LANGUAGE=en_US.UTF-8
 	export LANG=en_US.UTF-8
 	export LC_ALL=en_US.UTF-8
-	
+
 	# Generate locale
 	locale-gen en_US.UTF-8
 	dpkg-reconfigure locales
@@ -917,7 +917,7 @@ function update_upgrade {
 	# we try to install any package
 	apt-get -q -y update
 	apt-get -q -y upgrade
-	
+
 	# also remove the orphaned stuf
 	apt-get -q -y autoremove
 }
@@ -1019,8 +1019,8 @@ system)
 	echo '  - mysqluser [domain.tld] (create matching mysql user and database)'
 	echo '  '
 	echo '... and now some extras'
-    echo '  - info                   (Displays information about the OS, ARCH and VERSION)'
-    echo '  - sshkey                 (Generate SSH key)'
+	echo '  - info                   (Displays information about the OS, ARCH and VERSION)'
+	echo '  - sshkey                 (Generate SSH key)'
 	echo '  - apt                    (update sources.list for UBUNTU only)'
 	echo '  - ps_mem                 (Download the handy python script to report memory usage)'
 	echo '  - vzfree                 (Install vzfree for correct memory reporting on OpenVZ VPS)'
