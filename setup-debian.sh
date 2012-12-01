@@ -777,6 +777,42 @@ function install_ps_mem {
 }
 
 ############################################################
+# Update apt sources (Ubuntu only; not yet supported for debian)
+############################################################
+function update_apt_sources {
+	eval `grep '^DISTRIB_CODENAME=' /etc/*-release 2>/dev/null`
+
+	if [ "$DISTRIB_CODENAME" == "" ]
+	then
+		die "Unknown Ubuntu flavor $DISTRIB_CODENAME"
+	fi
+
+	cat > /etc/apt/sources.list <<END
+## main & restricted repositories
+deb http://us.archive.ubuntu.com/ubuntu/ $DISTRIB_CODENAME main restricted
+deb-src http://us.archive.ubuntu.com/ubuntu/ $DISTRIB_CODENAME main restricted
+
+deb http://security.ubuntu.com/ubuntu $DISTRIB_CODENAME-updates main restricted
+deb-src http://security.ubuntu.com/ubuntu $DISTRIB_CODENAME-updates main restricted
+
+deb http://security.ubuntu.com/ubuntu $DISTRIB_CODENAME-security main restricted
+deb-src http://security.ubuntu.com/ubuntu $DISTRIB_CODENAME-security main restricted
+
+## universe repositories - uncomment to enable
+deb http://us.archive.ubuntu.com/ubuntu/ $DISTRIB_CODENAME universe
+deb-src http://us.archive.ubuntu.com/ubuntu/ $DISTRIB_CODENAME universe
+
+deb http://us.archive.ubuntu.com/ubuntu/ $DISTRIB_CODENAME-updates universe
+deb-src http://us.archive.ubuntu.com/ubuntu/ $DISTRIB_CODENAME-updates universe
+
+deb http://security.ubuntu.com/ubuntu $DISTRIB_CODENAME-security universe
+deb-src http://security.ubuntu.com/ubuntu $DISTRIB_CODENAME-security universe
+END
+
+	print_info "/etc/apt/sources.list updated for "$DISTRIB_CODENAME
+}
+
+############################################################
 # Install vzfree (OpenVZ containers only)
 ############################################################
 function install_vzfree {
@@ -966,6 +1002,9 @@ dropbear)
 	;;
 ps_mem)
 	install_ps_mem
+	;;
+apt)
+	update_apt_sources
 	;;
 vzfree)
 	install_vzfree
