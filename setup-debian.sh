@@ -973,9 +973,6 @@ function install_3proxy {
 	then
 		die "Usage: `basename $0` 3proxy [http-proxy port #]"
 	fi
-
-	# Declare http port variable for latter use
-	http_port=$1
         echo "You have chosen port $http_porty"
 	# Build 3proxy
 	echo "Downloading and building 3proxy"
@@ -1109,6 +1106,10 @@ esac
 exit 0
 
 END
+
+	# Make sure 3proxy starts with system
+
+	update-rc.d 3proxy defaults	
 
 	# Add Iptable entry for specified port
 	echo "Adding necessary Iptable entry"
