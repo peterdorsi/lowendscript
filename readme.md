@@ -6,10 +6,10 @@ Remove excess packages (apache2, sendmail, bind9, samba, nscd, etc) and install 
  - iptables (firewall)
  - dash (replaces bash)
  - syslogd
- - MySQL (v5.1+ W/O Innodb, configured for lowend VPS)
+ - MySQL (v5.5+ W/O Innodb, configured for lowend VPS)
  - PHP-FPM (v5.3+ with APC installed and configured)
  - exim4 (light mail server)
- - nginx (v1.0+ from dotdeb, configured for lowend VPS. Change worker_processes number in /etc/nginx/nginx.conf according to number of your CPUs)
+ - nginx (v1.2+ from dotdeb, configured for lowend VPS. Change worker_processes number in /etc/nginx/nginx.conf according to number of your CPUs)
  - vim, nano, mc, htop, iftop & iotop (more to come...)
 
 Includes sample nginx config files for PHP sites. You can create a basic site shell (complete with nginx vhost) like this:
@@ -26,7 +26,7 @@ When running the iptables or dropbear install you must specify a SSH port. Remem
 	$ ./setup-debian.sh dotdeb # not required if using Ubuntu
 	$ ./setup-debian.sh system
 	$ ./setup-debian.sh dropbear 22  # or any other port number
-	$ ./setup-debian.sh iptables
+	$ ./setup-debian.sh iptables [dropbear port] # or any other port number
 	$ ./setup-debian.sh mysql
 	$ ./setup-debian.sh nginx
 	$ ./setup-debian.sh php
