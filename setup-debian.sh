@@ -344,11 +344,6 @@ server {
 		access_log off;
 	}
 
-	## Made IPV6 Listener not conflict and throw errors
-	sed -i \
-		"s/listen [::]:80 default_server;/listen [::]:80 default_server ipv6only=on;/" \
-		/etc/nginx/sites-available/default
-
 	## Disable viewing .htaccess & .htpassword
 	location ~ /\.ht {
 		deny  all;
@@ -406,6 +401,15 @@ END
 	echo 'Created /etc/nginx/php.conf for PHP sites'
 	echo 'Created /etc/nginx/sites-available/default_php sample vhost'
 	echo ' '
+
+ if [ -f /etc/nginx/sites-available/default ]
+	then
+		# Made IPV6 Listener not conflict and throw errors
+		sed -i \
+			"s/listen \[::]:80 default_server;/listen [::]:80 default_server ipv6only=on;/" \
+			/etc/nginx/sites-available/default
+ fi
+
  if [ -f /etc/nginx/nginx.conf ]
 	then
 		sed -i \
