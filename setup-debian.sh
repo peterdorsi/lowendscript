@@ -406,7 +406,7 @@ END
 	then
 		# Made IPV6 Listener not conflict and throw errors
 		sed -i \
-			"s/listen [::]:80 default_server;/listen [::]:80 default_server ipv6only=on;/" \
+			"s/listen \[::]:80 default_server;/listen [::]:80 default_server ipv6only=on;/" \
 			/etc/nginx/sites-available/default
  fi
 
