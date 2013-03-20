@@ -230,8 +230,15 @@ key_buffer = 12M
 query_cache_size = 0
 table_cache = 32
 
+init_connect='SET collation_connection = utf8_unicode_ci'
+character-set-server = utf8
+collation-server = utf8_unicode_ci
+
 ignore_builtin_innodb
 default_storage_engine=MyISAM
+
+[client]
+default-character-set = utf8
 END
 	invoke-rc.d mysql start
 
