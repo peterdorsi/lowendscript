@@ -421,11 +421,12 @@ END
 
  if [ -f /etc/nginx/nginx.conf ]
 	then
+		cpu_count=`grep -c ^processor /proc/cpuinfo`
 		sed -i \
-			"s/worker_processes 4;/worker_processes 1;/" \
+			"s/worker_processes [0-9]*;/worker_processes $cpu_count;/" \
 			/etc/nginx/nginx.conf
 		sed -i \
-			"s/worker_connections 768;/worker_connections 1024;/" \
+			"s/worker_connections [0-9]*;/worker_connections 1024;/" \
 			/etc/nginx/nginx.conf
 		# Enable advanced compression
 		sed -i \
