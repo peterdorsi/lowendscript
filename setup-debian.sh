@@ -427,6 +427,10 @@ END
 		sed -i \
 			"s/worker_connections 768;/worker_connections 1024;/" \
 			/etc/nginx/nginx.conf
+		# Enable advanced compression
+		sed -i \
+			"s/# gzip_/gzip_/g" \
+			/etc/nginx/nginx.conf
  fi
 	invoke-rc.d nginx restart
 }
