@@ -234,8 +234,10 @@ init_connect='SET collation_connection = utf8_unicode_ci'
 character-set-server = utf8
 collation-server = utf8_unicode_ci
 
-ignore_builtin_innodb
 default_storage_engine=MyISAM
+skip-innodb
+
+log-slow-queries=/var/log/mysql/slow-queries.log
 
 [client]
 default-character-set = utf8
