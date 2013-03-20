@@ -86,8 +86,9 @@ function print_warn {
 }
 
 
-## Installation of Applications
-
+############################################################
+# applications
+############################################################
 
 function install_dash {
 	check_install dash dash
@@ -113,8 +114,6 @@ function install_iotop {
 
 function install_iftop {
 	check_install iftop iftop
-	print_warn "Run IFCONFIG to find your net. device name"
-	print_warn "Example usage: iftop -i venet0"
 }
 
 function install_vim {
@@ -122,7 +121,6 @@ function install_vim {
 }
 
 function install_dropbear {
-
 	if [ -z "$1" ]
 	then
 		die "Usage: `basename $0` dropbear [ssh-port-#]"
@@ -224,7 +222,9 @@ function install_mysql {
 
 	# Install a low-end copy of the my.cnf to disable InnoDB
 	invoke-rc.d mysql stop
-	cat > /etc/mysql/conf.d/lowendbox.cnf <<END
+	cat > /etc/mysql/conf.d/deb-setup.cnf <<END
+# Global settings over-riding my.cnf values
+
 [mysqld]
 key_buffer = 12M
 query_cache_size = 0
@@ -421,6 +421,7 @@ END
 
  if [ -f /etc/nginx/nginx.conf ]
 	then
+		# one worker for each CPU and max 1024 connections/worker
 		cpu_count=`grep -c ^processor /proc/cpuinfo`
 		sed -i \
 			"s/worker_processes [0-9]*;/worker_processes $cpu_count;/" \
@@ -734,6 +735,8 @@ function install_iptables {
 # log iptables denied calls (Can grow log files fast!)
 #-A INPUT -m limit --limit 5/min -j LOG --log-prefix "iptables denied: " --log-level 7
 
+# Misc
+
 # Reject all other inbound - default deny unless explicitly allowed policy
 #-A INPUT -j REJECT
 #-A FORWARD -j REJECT
@@ -955,7 +958,7 @@ function show_os_arch_version {
 }
 
 ############################################################
-# Fix locale for OpenVZ Ubuntu templates
+# Fix locale for OpenVZ templates
 ############################################################
 function fix_locale {
 	check_install multipath-tools multipath-tools
