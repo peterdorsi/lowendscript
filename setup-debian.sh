@@ -438,6 +438,11 @@ END
 			"s/# gzip_/gzip_/g" \
 			/etc/nginx/nginx.conf
  fi
+
+	# remove localhost-config
+	rm -f /etc/nginx/sites-enabled/default
+
+	# restart nginx
 	invoke-rc.d nginx restart
 }
 
