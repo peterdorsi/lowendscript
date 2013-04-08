@@ -12,6 +12,7 @@ function check_install {
 		while [ -n "$1" ]
 		do
 			DEBIAN_FRONTEND=noninteractive apt-get -q -y install "$1"
+			apt-get clean
 			print_info "$1 installed for $executable"
 			shift
 		done
@@ -24,6 +25,7 @@ function check_remove {
 	if [ -n "`which "$1" 2>/dev/null`" ]
 	then
 		DEBIAN_FRONTEND=noninteractive apt-get -q -y remove --purge "$2"
+		apt-get clean
 		print_info "$2 removed"
 	else
 		print_warn "$2 is not installed"
@@ -979,13 +981,13 @@ function fix_locale {
 	dpkg-reconfigure locales
 }
 
-function apt_clean_all {
-	apt-get clean all
+function apt_clean {
+	apt-get -q -y autoclean
+	apt-get -q -y clean
 }
 
 function update_upgrade {
-	# Run through the apt-get update/upgrade first. This should be done before
-	# we try to install any package
+	# Run through the apt-get update/upgrade first. This should be done we try to install any package
 	apt-get -q -y update
 	apt-get -q -y upgrade
 
@@ -1261,6 +1263,7 @@ system)
 	install_iotop
 	install_iftop
 	install_syslogd
+	apt_clean
 	;;
 *)
 	show_os_arch_version
