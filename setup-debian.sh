@@ -153,6 +153,8 @@ service ssh
 }
 END
 	invoke-rc.d xinetd restart
+
+	print_info "dropbear is installed and running"
 }
 
 function install_exim4 {
@@ -779,8 +781,7 @@ function remove_unneeded {
 	# before running apt-get update.
 	check_remove /usr/sbin/rsyslogd rsyslog
 
-	# Other packages that seem to be pretty common in standard OpenVZ
-	# templates.
+	# Other packages that are quite common in standard OpenVZ templates.
 	check_remove /usr/sbin/apache2 'apache2*'
 	check_remove /usr/sbin/named 'bind9*'
 	check_remove /usr/sbin/smbd 'samba*'
@@ -983,7 +984,7 @@ function update_upgrade {
 	apt-get -q -y update
 	apt-get -q -y upgrade
 
-	# also remove the orphaned stuf
+	# also remove the orphaned stuff
 	apt-get -q -y autoremove
 }
 
