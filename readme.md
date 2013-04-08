@@ -25,6 +25,7 @@ When running the iptables or dropbear install you must specify a SSH port. Remem
 	wget --no-check-certificate https://raw.github.com/Xeoncross/lowendscript/master/setup-debian.sh 
 	chmod +x setup-debian.sh
 	./setup-debian.sh dotdeb # not required if using Ubuntu
+	./setup-debian.sh locale # for OpenVZ
 	./setup-debian.sh system
 	./setup-debian.sh dropbear [port]
 	./setup-debian.sh iptables [port]
