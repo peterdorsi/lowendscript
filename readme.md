@@ -6,11 +6,10 @@ Remove excess packages (apache2, sendmail, bind9, samba, nscd, etc) and install 
  - iptables (firewall)
  - dash (replaces bash)
  - syslogd
- - MySQL (v5.5+ W/O Innodb, configured for lowend VPS)
+ - MySQL (v5.5+ without Innodb, configured for lowend VPS)
  - PHP-FPM (v5.3+ with APC installed and configured)
  - exim4 (light mail server)
- - nginx (v1.2+ from dotdeb, configured for lowend VPS. Change worker_processes number in /etc/nginx/nginx.conf according to number of your CPUs)
- - vim, nano, mc, htop, iftop & iotop (more to come...)
+ - nginx (v1.2+ from dotdeb, configured for lowend VPS. Change worker_processes number in /etc/nginx/nginx.conf according to number of your CPUs)  - vim, nano, mc, htop, iftop & iotop (more to come...)
 
 Includes sample nginx config files for PHP sites. You can create a basic site shell (complete with nginx vhost) like this:
 
