@@ -413,6 +413,9 @@ location ~ \.php$ {
 # The exploit also can be stopped by adding "cgi.fix_pathinfo = 0" in your php.ini file.
 END
 
+	# remove localhost-config
+	rm -f /etc/nginx/sites-enabled/default
+
 	echo 'Created /etc/nginx/php.conf for PHP sites'
 	echo 'Created /etc/nginx/sites-available/default_php sample vhost'
 	echo ' '
@@ -440,9 +443,6 @@ END
 			"s/# gzip_/gzip_/g" \
 			/etc/nginx/nginx.conf
  fi
-
-	# remove localhost-config
-	rm -f /etc/nginx/sites-enabled/default
 
 	# restart nginx
 	invoke-rc.d nginx restart
@@ -1270,7 +1270,8 @@ system)
 	echo '  '
 	echo 'Usage:' `basename $0` '[option] [argument]'
 	echo 'Available options (in recomended order):'
-	echo '  - dotdeb                 (install dotdeb apt source for nginx +1.0)'
+	echo '  - dotdeb                 (install dotdeb apt source for nginx 1.2+)'
+	echo '  - locale                 (Fix locales issue with OpenVZ templates)'
 	echo '  - system                 (remove unneeded, upgrade system, install software)'
 	echo '  - dropbear  [port]       (SSH server)'
 	echo '  - iptables  [port]       (setup basic firewall with HTTP(S) open)'
