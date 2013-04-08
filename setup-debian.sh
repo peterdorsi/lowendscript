@@ -667,7 +667,7 @@ END
 
 function install_iptables {
 
-	check_install iptables
+	check_install iptables iptables
 
 	if [ -z "$1" ]
 	then
