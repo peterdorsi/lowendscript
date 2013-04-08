@@ -114,6 +114,8 @@ function install_iotop {
 
 function install_iftop {
 	check_install iftop iftop
+	print_warn "Run IFCONFIG to find your net. device name"
+	print_warn "Example usage: iftop -i venet0"
 }
 
 function install_vim {
@@ -1261,15 +1263,15 @@ system)
 	echo 'Available options (in recomended order):'
 	echo '  - dotdeb                 (install dotdeb apt source for nginx +1.0)'
 	echo '  - system                 (remove unneeded, upgrade system, install software)'
-	echo '  - exim4                  (install exim4 mail server)'
 	echo '  - dropbear  [port]       (SSH server)'
 	echo '  - iptables  [port]       (setup basic firewall with HTTP(S) open)'
 	echo '  - mysql                  (install MySQL and set root password)'
 	echo '  - nginx                  (install nginx and create sample PHP vhosts)'
 	echo '  - php                    (install PHP5-FPM with APC, cURL, suhosin, etc...)'
+	echo '  - exim4                  (install exim4 mail server)'
 	echo '  - site      [domain.tld] (create nginx vhost and /var/www/$site/public)'
-	echo '  - wordpress      [domain.tld] (create nginx vhost and /var/www/$wordpress/public)'
 	echo '  - mysqluser [domain.tld] (create matching mysql user and database)'
+	echo '  - wordpress [domain.tld] (create nginx vhost and /var/www/$wordpress/public)'
 	echo '  '
 	echo '... and now some extras'
 	echo '  - info                   (Displays information about the OS, ARCH and VERSION)'
@@ -1281,7 +1283,7 @@ system)
 	echo '  - locale                 (Fix locales issue with OpenVZ Ubuntu templates)'
 	echo '  - webmin                 (Install Webmin for VPS management)'
 	echo '  - test                   (Run the classic disk IO and classic cachefly network test)'
-	echo '  - 3proxy                 (Install 3proxy - Free tiny proxy server, with authenticatin support, HTTP, SOCKS5 and whatever you can throw at it)'
+	echo '  - 3proxy                 (Install 3proxy - Free tiny proxy server, with authentication support, HTTP, SOCKS5 and whatever you can throw at it)'
 	echo '  - 3proxyauth             (add users/passwords to your proxy user authentication list)'
 	echo '  '
 	;;
