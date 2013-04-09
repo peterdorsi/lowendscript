@@ -988,7 +988,8 @@ function apt_clean {
 }
 
 function update_upgrade {
-	# Run through the apt-get update/upgrade first. This should be done we try to install any package
+	# Run through the apt-get update/upgrade first.
+	# This should be done before we try to install any package
 	apt-get -q -y update
 	apt-get -q -y upgrade
 
