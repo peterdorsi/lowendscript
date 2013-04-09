@@ -475,6 +475,7 @@ server {
 	server_name www.$1 $1;
 	root /var/www/$1/public;
 	index index.html index.htm index.php;
+	client_max_body_size 32m;
 
 	access_log  /var/www/$1/access.log;
 	error_log  /var/www/$1/error.log;
