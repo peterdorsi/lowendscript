@@ -968,7 +968,7 @@ function show_os_arch_version {
 }
 
 ############################################################
-# Fix locale for OpenVZ templates
+# Fix locale for OpenVZ Ubuntu templates
 ############################################################
 function fix_locale {
 	check_install multipath-tools multipath-tools
@@ -1271,7 +1271,6 @@ system)
 	echo 'Usage:' `basename $0` '[option] [argument]'
 	echo 'Available options (in recomended order):'
 	echo '  - dotdeb                 (install dotdeb apt source for nginx 1.2+)'
-	echo '  - locale                 (Fix locales issue with OpenVZ templates)'
 	echo '  - system                 (remove unneeded, upgrade system, install software)'
 	echo '  - dropbear  [port]       (SSH server)'
 	echo '  - iptables  [port]       (setup basic firewall with HTTP(S) open)'
