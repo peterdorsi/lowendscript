@@ -228,7 +228,7 @@ function install_mysql {
 
 	# Install a low-end copy of the my.cnf to disable InnoDB
 	invoke-rc.d mysql stop
-	cat > /etc/mysql/conf.d/deb-setup.cnf <<END
+	cat > /etc/mysql/conf.d/lowendbox.cnf <<END
 # These values override values from /etc/mysql/my.cnf
 
 [mysqld]
