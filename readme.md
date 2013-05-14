@@ -4,13 +4,10 @@ Remove excess packages (apache2, sendmail, bind9, samba, nscd, etc) and install 
 
  - dropbear (SSH)
  - iptables (firewall)
- - dash (replaces bash)
  - syslogd
- - MySQL (v5.5+ without Innodb, configured for lowend VPS)
- - PHP-FPM (v5.3+ with APC installed and configured)
  - exim4 (light mail server)
  - nginx (v1.2+ from dotdeb, configured for lowend VPS. Change worker_processes in nginx.conf according to number of CPUs)
- - vim, nano, mc, htop, iftop & iotop
+ - nano, mc, htop, iftop & iotop
 
 Includes sample nginx config files for PHP sites. You can create a basic site shell (complete with nginx vhost) like this:
 
@@ -20,23 +17,43 @@ When running the iptables or dropbear install you must specify a SSH port. Remem
 
 ## Usage (in recommended order)
 
+    01. ssh root@{your_ip}
+    02. passwd
+    03. /usr/sbin/groupadd wheel
+    04. /usr/sbin/visudo
+        a. # or visudo 
+        b. %wheel  ALL=(ALL)       ALL
+    05. /usr/sbin/adduser {user}
+        a. #or useradd {user}
+    06. /usr/sbin/usermod -a -G wheel {user}
+    07. scp ~/.ssh/id_rsa.pub {user}@{your_ip}
+    08. mkdir ~{user}/.ssh:
+    09. mv ~{user}/id_rsa.pub ~{user}/.ssh/authorized_keys
+    10. chown -R demo:demo ~demo/.ssh
+    11. chmod 700 ~demo/.ssh
+    12. chmod 600 ~demo/.ssh/authorized_keys
+    13. nano /etc/ssh/sshd_config
+        a. Port {port}
+        b. Protocol 2
+        c. PermitRootLogin no
+        d. PasswordAuthentication no
+        e. UseDNS no
+        f. AllowUsers {user}
+    14. chsh {user} -s /bin/bash  #choose a shell
+
+
 ### Warning! This script will overwrite previous configs during reinstallation.
 
-	wget --no-check-certificate https://raw.github.com/Xeoncross/lowendscript/master/setup-debian.sh 
+	wget --no-check-certificate https://raw.github.com/peterdorsi/lowendscript/master/setup-debian.sh 
 	chmod +x setup-debian.sh
 	./setup-debian.sh dotdeb # not required if using Ubuntu
 	./setup-debian.sh system
 	./setup-debian.sh dropbear [port]
 	./setup-debian.sh iptables [port]
-	./setup-debian.sh mysql
 	./setup-debian.sh nginx
 	./setup-debian.sh php
 	./setup-debian.sh exim4
 	./setup-debian.sh site [domain.tld]
-	./setup-debian.sh mysqluser [domain.tld]
-	./setup-debian.sh wordpress [domain.tld]
-	./setup-debian.sh 3proxy 3128
-	./setup-debian.sh 3proxyauth username password
 
 #### ... and now time for some extras
 
@@ -91,12 +108,8 @@ Configure or reconfigure MOTD
 
 ## After installation
 
-- MySQL root is given a new password which is located in ~root/.my.cnf.
 - After installing the full set, RAM usage reaches ~40-45MB.
-By default APC configured to use 32MB for caching.
-To reduce ram usage, you may disable APC by moving or deleting the following file - /etc/php5/conf.d/apc.ini
 - I recommend installing Ajenti and/or Webmin to manage your VPS.
-- For security reasons delete, move or password protect "[domain.tld]/public/phpinfo.php" file, which installed automatically on each new site installation.
 
 ## Credits
 

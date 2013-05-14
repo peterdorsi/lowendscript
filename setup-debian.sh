@@ -55,7 +55,7 @@ function get_domain_name() {
 	domain=${1%.*}
 	lowest=`expr "$domain" : '.*\.\([a-z][a-z]*\)'`
 	case "$lowest" in
-	com|net|org|gov|edu|co|me|info|name)
+	com|net|org|gov|edu|co|me|info|name|io)
 		domain=${domain%.*}
 		;;
 	esac
@@ -92,11 +92,6 @@ function print_warn {
 # applications
 ############################################################
 
-function install_dash {
-	check_install dash dash
-	rm -f /bin/sh
-	ln -s dash /bin/sh
-}
 
 function install_nano {
 	check_install nano nano
@@ -118,10 +113,6 @@ function install_iftop {
 	check_install iftop iftop
 	print_warn "Run IFCONFIG to find your net. device name"
 	print_warn "Example usage: iftop -i venet0"
-}
-
-function install_vim {
-	check_install vim vim
 }
 
 function install_dropbear {
@@ -220,120 +211,15 @@ END
 	invoke-rc.d inetutils-syslogd start
 }
 
-function install_mysql {
-
-	# Install the MySQL packages
-	check_install mysqld mysql-server
-	check_install mysql mysql-client
-
-	# Install a low-end copy of the my.cnf to disable InnoDB
-	invoke-rc.d mysql stop
-	cat > /etc/mysql/conf.d/lowendbox.cnf <<END
-# These values override values from /etc/mysql/my.cnf
-
-[mysqld]
-key_buffer = 12M
-query_cache_size = 0
-table_cache = 32
-
-init_connect='SET collation_connection = utf8_unicode_ci'
-character-set-server = utf8
-collation-server = utf8_unicode_ci
-
-default_storage_engine=MyISAM
-skip-innodb
-
-log-slow-queries=/var/log/mysql/slow-queries.log
-
-[client]
-default-character-set = utf8
-END
-	invoke-rc.d mysql start
-
-	# Generating a new password for the root user.
-	passwd=`get_password root@mysql`
-	mysqladmin password "$passwd"
-	cat > ~/.my.cnf <<END
-[client]
-user = root
-password = $passwd
-END
-	chmod 600 ~/.my.cnf
-}
-
-function install_php {
-	# PHP core
-	check_install php5-fpm php5-fpm
-	check_install php5-cli php5-cli
-
-	# PHP modules
-	DEBIAN_FRONTEND=noninteractive apt-get -y install php5-apc php5-suhosin php5-curl php5-gd php5-intl php5-mcrypt php-gettext php5-mysql php5-sqlite
-
-	echo 'Using PHP-FPM to manage PHP processes'
-	echo ' '
-
-        print_info "Taking configuration backups in /root/bkps; you may keep or delete this directory"
-        mkdir /root/bkps
-	mv /etc/php5/conf.d/apc.ini /root/bkps/apc.ini
-
-cat > /etc/php5/conf.d/apc.ini <<END
-[APC]
-extension=apc.so
-apc.enabled=1
-apc.shm_segments=1
-apc.shm_size=32M
-apc.ttl=7200
-apc.user_ttl=7200
-apc.num_files_hint=1024
-apc.mmap_file_mask=/tmp/apc.XXXXXX
-apc.max_file_size = 1M
-apc.post_max_size = 1000M
-apc.upload_max_filesize = 1000M
-apc.enable_cli=0
-apc.rfc1867=0
-END
-
-	mv /etc/php5/conf.d/suhosin.ini /root/bkps/suhosin.ini
-
-cat > /etc/php5/conf.d/suhosin.ini <<END
-; configuration for php suhosin module
-extension=suhosin.so
-suhosin.executor.include.whitelist="phar"
-suhosin.request.max_vars = 2048
-suhosin.post.max_vars = 2048
-suhosin.request.max_array_index_length = 256
-suhosin.post.max_array_index_length = 256
-suhosin.request.max_totalname_length = 8192
-suhosin.post.max_totalname_length = 8192
-suhosin.sql.bailout_on_error = Off
-END
-
-	if [ -f /etc/php5/fpm/php.ini ]
-		then
-			sed -i \
-				"s/upload_max_filesize = 2M/upload_max_filesize = 200M/" \
-				/etc/php5/fpm/php.ini
-			sed -i \
-				"s/post_max_size = 8M/post_max_size = 200M/" \
-				/etc/php5/fpm/php.ini
-			sed -i \
-				"s/memory_limit = 128M/memory_limit = 36M/" \
-				/etc/php5/fpm/php.ini
-	fi
-
-	invoke-rc.d php5-fpm restart
-
-}
-
 function install_nginx {
 
 	check_install nginx nginx
 
 	mkdir -p /var/www
 
-	# PHP-safe default vhost
+	# default vhost
 	cat > /etc/nginx/sites-available/default_php <<END
-# Creates unlimited domains for PHP sites as long as you add the
+# Creates unlimited domains for sites as long as you add the
 # entry to /etc/hosts and create the matching \$host folder.
 server {
 	listen 80 default;
@@ -464,17 +350,13 @@ function install_site {
 Hello World
 END
 
-	# Setup test phpinfo.php file
-	echo "<?php phpinfo(); ?>" > /var/www/$1/public/phpinfo.php
-	chown www-data:www-data "/var/www/$1/public/phpinfo.php"
-
 	# Setting up Nginx mapping
 	cat > "/etc/nginx/sites-available/$1.conf" <<END
 server {
 	listen 80;
 	server_name www.$1 $1;
 	root /var/www/$1/public;
-	index index.html index.htm index.php;
+	index index.html;
 	client_max_body_size 32m;
 
 	access_log  /var/www/$1/access.log;
@@ -515,182 +397,7 @@ END
 	invoke-rc.d nginx restart
 
 	print_warn "New site successfully installed."
-	print_warn "You may can test PHP functionality by accessing $1/phpinfo.php"
 }
-
-function install_wordpress {
-
-	if [ -z "$1" ]
-	then
-		die "Usage: `basename $0` wordpress [domain]"
-	fi
-
-	# Setup folder
-	mkdir /var/www/$1
-	mkdir /var/www/$1/public
-
-	# Downloading the WordPress' latest and greatest distribution.
-    mkdir /tmp/wordpress.$$
-    wget -O - http://wordpress.org/latest.tar.gz | \
-        tar zxf - -C /tmp/wordpress.$$
-    cp -a /tmp/wordpress.$$/wordpress/. "/var/www/$1/public"
-    rm -rf /tmp/wordpress.$$
-
-	# Setting up the MySQL database
-    dbname=`echo $1 | tr . _`
-	echo Database Name = 'echo $1 | tr . _'
-    userid=`get_domain_name $1`
-    # MySQL userid cannot be more than 15 characters long
-    userid="${userid:0:15}"
-    passwd=`get_password "$userid@mysql"`
-	# Write wp.config file
-    cp "/var/www/$1/public/wp-config-sample.php" "/var/www/$1/public/wp-config.php"
-	salt=$(curl -L https://api.wordpress.org/secret-key/1.1/salt/)
-	defineString='put your unique phrase here'
-	printf '%s\n' "g/$defineString/d" a "$salt" . w | ed -s /var/www/$1/public/wp-config.php
-    sed -i "s/database_name_here/$dbname/; s/username_here/$userid/; s/password_here/$passwd/" \
-        "/var/www/$1/public/wp-config.php"
-
-		cat > "/var/www/$1/mysql.conf" <<END
-[mysql]
-user = $userid
-password = $passwd
-database = $dbname
-END
-	chmod 600 "/var/www/$1/mysql.conf"
-
-    mysqladmin create "$dbname"
-    echo "GRANT ALL PRIVILEGES ON \`$dbname\`.* TO \`$userid\`@localhost IDENTIFIED BY '$passwd';" | \
-        mysql
-
-	# Setting up Nginx mapping
-	cat > "/etc/nginx/sites-available/$1.conf" <<END
-server {
-	listen 80;
-	server_name www.$1 $1;
-	root /var/www/$1/public;
-	index index.php;
-
-	access_log  /var/www/$1/access.log;
-	error_log  /var/www/$1/error.log;
-
-	# unless the request is for a valid file, send to bootstrap
-	if (!-e \$request_filename)
-    {
-	    rewrite ^(.+)$ /index.php?q=$1 last;
-    }
- 
-    # catch all
-    error_page 404 /index.php;
-
-    # Directives to send expires headers and turn off 404 error logging.
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
-        expires max;
-        log_not_found off;
-        access_log off;
-    }
-
-    location = /favicon.ico {
-        log_not_found off;
-        access_log off;
-    }
-
-    location = /robots.txt {
-        allow all;
-        log_not_found off;
-        access_log off;
-    }
-
-    ## Disable viewing .htaccess & .htpassword
-    location ~ /\.ht {
-        deny  all;
-    }
-
-    location / {
-                # This is cool because no php is touched for static content. 
-                # include the "?\$args" part so non-default permalinks doesn't break when using query string
-                try_files \$uri \$uri/ /index.php?\$args;
-        }
-
-    # use fastcgi for all php files
-    location ~ \.php$
-    {
-        try_files \$uri =404;
-
-        fastcgi_pass 127.0.0.1:9000;
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME /var/www/$1/public\$fastcgi_script_name;
-        include fastcgi_params;
-
-        # Some default config
-        fastcgi_connect_timeout        20;
-        fastcgi_send_timeout          180;
-        fastcgi_read_timeout          180;
-        fastcgi_buffer_size          128k;
-        fastcgi_buffers            4 256k;
-        fastcgi_busy_buffers_size    256k;
-        fastcgi_temp_file_write_size 256k;
-        fastcgi_intercept_errors    on;
-        fastcgi_ignore_client_abort off;
-
-    }
-
-}
-
-
-END
-	# Create the link so nginx can find it
-	ln -s /etc/nginx/sites-available/$1.conf /etc/nginx/sites-enabled/$1.conf
-
-	# PHP/Nginx needs permission to access this
-	chown www-data:www-data -R "/var/www/$1"
-
-	invoke-rc.d nginx restart
-
-	print_warn "New wordpress site successfully installed."
-}
-
-function install_mysqluser {
-
-	if [ -z "$1" ]
-	then
-		die "Usage: `basename $0` mysqluser [domain]"
-	fi
-
-	if [ ! -d "/var/www/$1/" ]
-	then
-		echo "no site found at /var/www/$1/"
-		exit
-	fi
-
-	# Setting up the MySQL database
-	dbname=`echo $1 | tr . _`
-	userid=`get_domain_name $1`
-	# MySQL userid cannot be more than 15 characters long
-	userid="${userid:0:15}"
-	passwd=`get_password "$userid@mysql"`
-
-	cat > "/var/www/$1/mysql.conf" <<END
-[mysql]
-user = $userid
-password = $passwd
-database = $dbname
-END
-	chmod 600 "/var/www/$1/mysql.conf"
-
-	mysqladmin create "$dbname"
-	echo "GRANT ALL PRIVILEGES ON \`$dbname\`.* TO \`$userid\`@localhost IDENTIFIED BY '$passwd';" | \
-		mysql
-
-	# We could also add these...
-	#echo "DROP USER '$userid'@'localhost';" | \ mysql
-	#echo "DROP DATABASE IF EXISTS  `$dbname` ;" | \ mysql
-
-	echo 'MySQL Username: ' $userid
-	echo 'MySQL Password: ' $passwd
-	echo 'MySQL Database: ' $dbname
-}
-
 
 function install_iptables {
 
@@ -1001,188 +708,6 @@ function update_timezone {
 	dpkg-reconfigure tzdata
 }
 
-
-############################################################
-# Install 3proxy (version 0.6.1, perfect proxy for LEB, supports authentication, easy config)
-############################################################
-function install_3proxy {
-
-	if [ -z "$1" ]
-	then
-		die "Usage: `basename $0` 3proxy [http-proxy port #]"
-	fi
-        echo "You have chosen port $http_porty"
-	# Build 3proxy
-	echo "Downloading and building 3proxy"
-	mkdir /tmp/proxy
-	cd /tmp/proxy
-	wget http://www.3proxy.ru/0.6.1/3proxy-0.6.1.tgz
-	tar -xvzf 3proxy-0.6.1.tgz
-	rm 3proxy-0.6.1.tgz
-	cd 3proxy-0.6.1
-	apt-get install build-essential
-	make -f Makefile.Linux
-	
-	# Navigate to 3proxy Install Directory
-	cd src
-	mkdir /etc/3proxy/
-	
-	# Move 3proxy program to a non-temporary location and navigate there
-	mv 3proxy /etc/3proxy/
-	cd /etc/3proxy/
-	
-	# Create a Log File
-	touch /var/log/3proxy.log
-	
-	# Create basic config that sets up HTTP proxy with user authentication
-	touch /etc/3proxy/3proxy.cfg
-	
-	cat > "/etc/3proxy/3proxy.cfg" <<END
-# Specify valid name servers. You can locate them on your VPS in /etc/resolv.conf
-#
-nserver 8.8.8.8
-nserver 8.8.4.4
-# Leave default cache size for DNS requests:
-#
-nscache 65536
-# Leave default timeout as well:
-#
-timeouts 1 5 30 60 180 1800 15 60
-# If your server has several IP-addresses, you need to provide an external one
-# Alternatively, you may ignore this line
-#external YOURSEVERIP
-# Provide the IP-address to be listened
-# If you ignore this line, proxy will listen all the server.s IP-addresses
-#internal YOURSEVERIP
-# Create users proxyuser1 and proxyuser2 and specify a password
-#
-users \$/etc/3proxy/.proxyauth
-# Specify daemon as a start mode
-#
-daemon
-# and the path to logs, and log format. Creation date will be added to a log name
-log /var/log/3proxy.log
-logformat "- +_L%t.%. %N.%p %E %U %C:%c %R:%r %O %I %h %T"
-# Compress the logs using gzip
-#
-archiver gz /usr/bin/gzip %F
-# store the logs for 30 days
-rotate 30
-# Configuring http(s) proxy
-#
-# enable strong authorization. To disable authentication, simply change to 'auth none'
-# added authentication caching to make life easier
-authcache user 60
-auth strong cache
-# and restrict access for ports via http(s)-proxy and deny access to local interfaces
-#
-deny * * 127.0.0.1,192.168.1.1
-allow * * * 80-88,8080-8088 HTTP
-allow * * * 443,8443 HTTPS
-# run http-proxy ... without ntlm-authorization, complete anonymity and port ...
-#
-proxy -n -p$1 -a
-# Configuring socks5-proxy
-#
-# enable strong authorization and authentication caching
-#
-# Purge the access-list of http-proxy and allow certain users
-#
-# set the maximum number of simultaneous connections to 32
-#authcache user 60
-#auth strong cache
-#flush
-#allow userdefined
-#socks
-END
-	
-	# Give appropriate permissions for config file
-	chmod 600 /etc/3proxy/3proxy.cfg
-	
-	# Create external user authentication file
-	touch /etc/3proxy/.proxyauth
-	chmod 600 /etc/3proxy/.proxyauth 
-	cat > "/etc/3proxy/.proxyauth" <<END
-## addusers in this format:
-## user:CL:password
-## see for documenation:  http://www.3proxy.ru/howtoe.asp#USERS
-END
-	
-	# Create initialization scripty so 3proxy starts with system
-	touch /etc/init.d/3proxy
-	chmod  +x /etc/init.d/3proxy
-	cat > "/etc/init.d/3proxy" <<END
-#!/bin/sh
-#
-# chkconfig: 2345 20 80
-# description: 3proxy tiny proxy server
-#
-#
-#
-#
-
-case "\$1" in
-   start)
-       echo Starting 3Proxy
-
-       /etc/3proxy/3proxy /etc/3proxy/3proxy.cfg
-       ;;
-
-   stop)
-       echo Stopping 3Proxy
-       /usr/bin/killall 3proxy
-       ;;
-
-   restart|reload)
-       echo Reloading 3Proxy
-       /usr/bin/killall -s USR1 3proxy
-       ;;
-   *)
-       echo Usage: \$0 "{start|stop|restart}"
-       exit 1
-esac
-exit 0
-
-END
-
-	# Make sure 3proxy starts with system
-
-	update-rc.d 3proxy defaults	
-
-	# Add Iptable entry for specified port
-	echo "Adding necessary Iptable entry"
-	iptables -I INPUT -p tcp --dport $1 -j ACCEPT
-	if [ -f /etc/iptables.up.rules ];
-	then
-	iptables-save < /etc/iptables.up.rules
-	fi
-	echo ''
-	echo '3proxy successfully installed, before you can use it you must add a user and password, for proxy authentication. ' 
-	echo 'This can be done using the "3proxyauth [user] [password]" it will add the user to the 3proxy auth file. '
-	echo 'If you do not want authentication, edit the 3proxy config file /etc/3proxy/3proxy.cfg  and set authentication to none (auth none)'
-	echo 'This will leave your http proxy open to anyone and everyone.'
-	
-	/etc/init.d/3proxy start
-	
-	echo "3proxy started"
-}
-
-function 3proxyauth {
-
-	if [[ -z "$1" || -z "$2" ]]
-	then
-		die "Usage: `basename $0` 3proxyauth username password"
-	fi
-	
-	if [ -f /etc/3proxy/.proxyauth ];
-	then
-	echo "$1:CL:$2" >> "/etc/3proxy/.proxyauth"
-	echo "User: $1 successfully added"
-	else
-	echo "Please install 3proxy (through this script) first."
-	fi
-
-}
 ######################################################################## 
 # START OF PROGRAM
 ########################################################################
@@ -1190,17 +715,11 @@ export PATH=/bin:/usr/bin:/sbin:/usr/sbin
 
 check_sanity
 case "$1" in
-mysql)
-	install_mysql
-	;;
 exim4)
 	install_exim4
 	;;
 nginx)
 	install_nginx
-	;;
-php)
-	install_php
 	;;
 dotdeb)
 	install_dotdeb
@@ -1208,23 +727,11 @@ dotdeb)
 site)
 	install_site $2
 	;;
-wordpress)
-	install_wordpress $2
-	;;
-mysqluser)
-	install_mysqluser $2
-	;;
 iptables)
 	install_iptables $2
 	;;
 dropbear)
 	install_dropbear $2
-	;;
-3proxy)
-	install_3proxy $2
-	;;
-3proxyauth)
-	3proxyauth $2 $3
 	;;	
 ps_mem)
 	install_ps_mem
@@ -1276,13 +783,9 @@ system)
 	echo '  - system                 (remove unneeded, upgrade system, install software)'
 	echo '  - dropbear  [port]       (SSH server)'
 	echo '  - iptables  [port]       (setup basic firewall with HTTP(S) open)'
-	echo '  - mysql                  (install MySQL and set root password)'
 	echo '  - nginx                  (install nginx and create sample PHP vhosts)'
-	echo '  - php                    (install PHP5-FPM with APC, cURL, suhosin, etc...)'
 	echo '  - exim4                  (install exim4 mail server)'
 	echo '  - site      [domain.tld] (create nginx vhost and /var/www/$site/public)'
-	echo '  - mysqluser [domain.tld] (create matching mysql user and database)'
-	echo '  - wordpress [domain.tld] (create nginx vhost and /var/www/$wordpress/public)'
 	echo '  '
 	echo '... and now some extras'
 	echo '  - info                   (Displays information about the OS, ARCH and VERSION)'
@@ -1294,8 +797,6 @@ system)
 	echo '  - locale                 (Fix locales issue with OpenVZ Ubuntu templates)'
 	echo '  - webmin                 (Install Webmin for VPS management)'
 	echo '  - test                   (Run the classic disk IO and classic cachefly network test)'
-	echo '  - 3proxy                 (Install 3proxy - Free tiny proxy server, with authentication support, HTTP, SOCKS5 and whatever you can throw at it)'
-	echo '  - 3proxyauth             (add users/passwords to your proxy user authentication list)'
 	echo '  '
 	;;
 esac
