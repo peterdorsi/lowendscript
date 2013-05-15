@@ -2,7 +2,6 @@
 
 Remove excess packages (apache2, sendmail, bind9, samba, nscd, etc) and install the basic components needed for a light-weight HTTP(S) web server:
 
- - dropbear (SSH)
  - iptables (firewall)
  - syslogd
  - exim4 (light mail server)
@@ -51,7 +50,6 @@ When running the iptables or dropbear install you must specify a SSH port. Remem
 	./setup-debian.sh system
 	./setup-debian.sh iptables [port]
 	./setup-debian.sh nginx
-	./setup-debian.sh php
 	./setup-debian.sh exim4
 	./setup-debian.sh site [domain.tld]
 
@@ -118,3 +116,9 @@ Configure or reconfigure MOTD
 - [ilevkov](https://github.com/ilevkov/lowendscript),
 - [asimzeeshan](https://github.com/asimzeeshan)
 - and many others!
+
+[slicehost setup new vps](http://articles.slicehost.com/2010/4/30/ubuntu-lucid-setup-part-1)
+[django setup](http://pig-monkey.com/2011/07/19/ubuntu-vps-django/)
+[nginx setup](http://www.abidibo.net/blog/2012/04/30/deploy-django-applications-nginx-uwsgi-virtualenv-south-git-and-fabric-part-1/)
+
+[nginx w/ uwsgi](https://library.linode.com/web-servers/nginx/python-uwsgi/debian-6-squeeze)

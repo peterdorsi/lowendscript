@@ -115,41 +115,6 @@ function install_iftop {
 	print_warn "Example usage: iftop -i venet0"
 }
 
-function install_dropbear {
-	if [ -z "$1" ]
-	then
-		die "Usage: `basename $0` dropbear [ssh-port-#]"
-	fi
-
-	check_install dropbear dropbear
-	check_install /usr/sbin/xinetd xinetd
-
-	# Disable SSH
-	touch /etc/ssh/sshd_not_to_be_run
-	invoke-rc.d ssh stop
-
-	# Enable dropbear to start. We are going to use xinetd as it is just
-	# easier to configure and might be used for other things.
-	cat > /etc/xinetd.d/dropbear <<END
-service ssh
-{
-	socket_type  = stream
-	only_from    = 0.0.0.0
-	wait         = no
-	user         = root
-	protocol     = tcp
-	server       = /usr/sbin/dropbear
-	server_args  = -i
-	disable      = no
-	port         = $1
-	type         = unlisted
-}
-END
-	invoke-rc.d xinetd restart
-
-	print_info "dropbear is installed and running"
-}
-
 function install_exim4 {
 	check_install mail exim4
 	if [ -f /etc/exim4/update-exim4.conf.conf ]
@@ -730,9 +695,6 @@ site)
 iptables)
 	install_iptables $2
 	;;
-dropbear)
-	install_dropbear $2
-	;;	
 ps_mem)
 	install_ps_mem
 	;;
@@ -781,7 +743,6 @@ system)
 	echo 'Available options (in recomended order):'
 	echo '  - dotdeb                 (install dotdeb apt source for nginx 1.2+)'
 	echo '  - system                 (remove unneeded, upgrade system, install software)'
-	echo '  - dropbear  [port]       (SSH server)'
 	echo '  - iptables  [port]       (setup basic firewall with HTTP(S) open)'
 	echo '  - nginx                  (install nginx and create sample PHP vhosts)'
 	echo '  - exim4                  (install exim4 mail server)'
