@@ -49,7 +49,6 @@ When running the iptables or dropbear install you must specify a SSH port. Remem
 	chmod +x setup-debian.sh
 	./setup-debian.sh dotdeb # not required if using Ubuntu
 	./setup-debian.sh system
-	./setup-debian.sh dropbear [port]
 	./setup-debian.sh iptables [port]
 	./setup-debian.sh nginx
 	./setup-debian.sh php
