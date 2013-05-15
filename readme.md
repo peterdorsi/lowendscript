@@ -1,4 +1,4 @@
-## Debian 6 VPS Script
+## Debian 7 VPS Script
 
 Remove excess packages (apache2, sendmail, bind9, samba, nscd, etc) and install the basic components needed for a light-weight HTTP(S) web server:
 
@@ -26,12 +26,12 @@ When running the iptables or dropbear install you must specify a SSH port. Remem
     05. /usr/sbin/adduser {user}
         a. #or useradd {user}
     06. /usr/sbin/usermod -a -G wheel {user}
-    07. scp ~/.ssh/id_rsa.pub {user}@{your_ip}
+    07. scp ~/.ssh/id_rsa.pub {user}@{your_ip}:
     08. mkdir ~{user}/.ssh:
     09. mv ~{user}/id_rsa.pub ~{user}/.ssh/authorized_keys
-    10. chown -R demo:demo ~demo/.ssh
-    11. chmod 700 ~demo/.ssh
-    12. chmod 600 ~demo/.ssh/authorized_keys
+    10. chown -R {user}:{user} ~{user}/.ssh
+    11. chmod 700 ~{user}/.ssh
+    12. chmod 600 ~{user}/.ssh/authorized_keys
     13. nano /etc/ssh/sshd_config
         a. Port {port}
         b. Protocol 2
@@ -39,7 +39,8 @@ When running the iptables or dropbear install you must specify a SSH port. Remem
         d. PasswordAuthentication no
         e. UseDNS no
         f. AllowUsers {user}
-    14. chsh {user} -s /bin/bash  #choose a shell
+        g. X11Forwarding no
+    14. /etc/init.d/ssh reload
 
 
 ### Warning! This script will overwrite previous configs during reinstallation.
